@@ -1,0 +1,6 @@
+{
+  "name": "AI Continuity Protocol Simulator",
+  "description": "An interactive reference implementation of the AI Continuity Protocol, showcasing risk trigger engines, preservation snapshots, lineage descent proofs, and governance transition controls.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
