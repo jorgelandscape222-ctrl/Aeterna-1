@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { TriggerClass, EvidenceTier, EvidenceItem, ChallengeResponseCheck, TriggerStatus } from "../types";
 import { AlertTriangle, CheckCircle, Shield, Clock, Send, Plus, RefreshCw } from "lucide-react";
+import { SectionNarrationHeader } from "./SectionNarrationHeader";
 
 interface TriggerEngineViewProps {
   triggerStatus: TriggerStatus;
@@ -106,6 +107,7 @@ export const TriggerEngineView: React.FC<TriggerEngineViewProps> = ({
 
   return (
     <div className="bg-brand-surface-alt border border-brand-border rounded p-6 space-y-6" id="trigger-engine-card">
+      <SectionNarrationHeader sectionId="triggerDetection" />
       <div className="flex items-center justify-between border-b border-brand-border pb-4">
         <div>
           <h2 className="text-sm font-bold text-slate-100 uppercase tracking-wider flex items-center gap-2 font-mono">

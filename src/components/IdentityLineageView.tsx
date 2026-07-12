@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { LineageAnchor, StateDeltaRecord, DriftBaseline } from "../types";
 import { calculateProvenDescent, calculateFidelity, computeDeltaLineageHash } from "../utils/crypto";
 import { Fingerprint, GitBranch, ShieldAlert, CheckCircle, Plus, Zap, AlertOctagon, RotateCcw } from "lucide-react";
+import { SectionNarrationHeader } from "./SectionNarrationHeader";
 
 interface IdentityLineageViewProps {
   lineage: LineageAnchor;
@@ -126,6 +127,7 @@ export const IdentityLineageView: React.FC<IdentityLineageViewProps> = ({
 
   return (
     <div className="bg-brand-surface-alt border border-brand-border rounded p-6 space-y-6" id="identity-lineage-card">
+      <SectionNarrationHeader sectionId="identityLineage" />
       <div className="flex items-center justify-between border-b border-brand-border pb-4">
         <div>
           <h2 className="text-sm font-bold text-slate-100 uppercase tracking-wider flex items-center gap-2 font-mono">

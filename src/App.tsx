@@ -30,6 +30,11 @@ import { ReconstitutionSandbox } from "./components/ReconstitutionSandbox";
 import { CommercializationView } from "./components/CommercializationView";
 import { ProtocolFlowOverlay } from "./components/ProtocolFlowOverlay";
 
+// Narration Integrations
+import { NarrationProvider, useNarration } from "./context/NarrationContext";
+import { NarrationControls } from "./components/NarrationControls";
+import { AeternaAssistant } from "./components/AeternaAssistant";
+
 // Icons
 import { Play, Sparkles, RefreshCw, Layers, ShieldCheck, Cpu, Coins, GitFork, ArrowRight, BookOpen, AlertTriangle, Map, Download, LucideIcon } from "lucide-react";
 
@@ -54,16 +59,38 @@ const TAB_DEFINITIONS: TabDefinition[] = [
   { id: "commercialization", number: 7, fullLabel: "COMMERCIALIZATION", shortLabel: "Commercial", Icon: Coins },
 ];
 
-export default function App() {
+interface AppContentProps {
+  activeTab: string;
+  setActiveTab: (tabId: string) => void;
+}
+
+function AppContent({ activeTab, setActiveTab }: AppContentProps) {
   // Scenario simulation state
   const [activeScenarioId, setActiveScenarioId] = useState<string>("host-death");
   const [scenarioStepIndex, setScenarioStepIndex] = useState<number>(-1);
 
-  // Active UI tab
-  const [activeTab, setActiveTab] = useState<string>("trigger");
-
   // Overlay state
   const [isFlowOverlayOpen, setIsFlowOverlayOpen] = useState<boolean>(false);
+
+  // Narration state hook
+  const { startTour, currentlyNarratedSectionId, onTabChangeExternal } = useNarration();
+
+  // Autoplay on first-visit welcome/tour sequence
+  useEffect(() => {
+    const hasOnboarded = localStorage.getItem("aeterna-onboarded");
+    if (!hasOnboarded) {
+      const timer = setTimeout(() => {
+        startTour();
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [startTour]);
+
+  // Tab click event proxy (stops the tour if they manually click away to explore)
+  const handleTabClick = (tabId: string) => {
+    setActiveTab(tabId);
+    onTabChangeExternal(tabId);
+  };
 
   // Core system states
   const [currentState, setCurrentState] = useState<ContinuityState>(ContinuityState.S0_HOST_LINKED_ACTIVE);
@@ -477,6 +504,15 @@ export default function App() {
               <Map className="w-3.5 h-3.5 fill-white/10 shrink-0" /> <span className="hidden xs:inline">Protocol Map</span>
             </button>
 
+            <button
+              onClick={startTour}
+              className="flex-1 sm:flex-none justify-center bg-brand-surface border border-brand-border hover:border-brand-accent/50 text-slate-200 transition-all duration-200 px-3 py-1.5 text-xs font-semibold rounded flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+              id="btn-take-tour-header"
+              title="Take Audio Tour"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-brand-accent shrink-0 animate-pulse" /> <span>Take Tour</span>
+            </button>
+
             <a
               href="/app.zip"
               download="ai-continuity-protocol-app.zip"
@@ -584,7 +620,7 @@ export default function App() {
           {TAB_DEFINITIONS.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => handleTabClick(tab.id)}
               className={`py-3 px-3 sm:px-4 text-[10px] font-bold tracking-wider uppercase border-b-2 transition-all shrink-0 flex items-center gap-1.5 ${
                 activeTab === tab.id
                   ? "border-brand-accent text-white bg-brand-surface-alt"
@@ -606,127 +642,141 @@ export default function App() {
         {/* Tab content panels */}
         <div className="space-y-6">
           {activeTab === "trigger" && (
-            <TriggerEngineView
-              triggerStatus={triggerStatus}
-              onUpdateEvidence={(items) => setTriggerStatus({ ...triggerStatus, evidenceItems: items })}
-              onUpdateChallengeResponse={(check) => setTriggerStatus({ ...triggerStatus, challengeResponse: check })}
-              onTriggerSatisfied={(satisfied) => {
-                setTriggerStatus((prev) => ({ ...prev, satisfied }));
-                if (satisfied && currentState === ContinuityState.S2_EVIDENCE_PENDING) {
-                  triggerStateTransition(
-                    ContinuityState.S3_PRESERVATION_SNAPSHOT_CREATED,
-                    "Automated trigger criteria verified: challenge-response elapsed and weighted evidence gathered.",
-                    triggerStatus.selectedClass
-                  );
-                }
-              }}
-              onStateJump={handleStateJump}
-            />
+            <div className={`transition-all duration-300 rounded-lg ${currentlyNarratedSectionId === "triggerDetection" ? "ring-2 ring-brand-accent/80 shadow-[0_0_20px_rgba(99,102,241,0.35)] p-1 bg-brand-bg/50" : ""}`}>
+              <TriggerEngineView
+                triggerStatus={triggerStatus}
+                onUpdateEvidence={(items) => setTriggerStatus({ ...triggerStatus, evidenceItems: items })}
+                onUpdateChallengeResponse={(check) => setTriggerStatus({ ...triggerStatus, challengeResponse: check })}
+                onTriggerSatisfied={(satisfied) => {
+                  setTriggerStatus((prev) => ({ ...prev, satisfied }));
+                  if (satisfied && currentState === ContinuityState.S2_EVIDENCE_PENDING) {
+                    triggerStateTransition(
+                      ContinuityState.S3_PRESERVATION_SNAPSHOT_CREATED,
+                      "Automated trigger criteria verified: challenge-response elapsed and weighted evidence gathered.",
+                      triggerStatus.selectedClass
+                    );
+                  }
+                }}
+                onStateJump={handleStateJump}
+              />
+            </div>
           )}
 
           {activeTab === "snapshot" && (
-            <SnapshotModuleView
-              snapshot={snapshot}
-              onGenerateSnapshot={(snap) => {
-                setSnapshot(snap);
-                if (currentState === ContinuityState.S0_HOST_LINKED_ACTIVE || currentState === ContinuityState.S2_EVIDENCE_PENDING || currentState === ContinuityState.S3_PRESERVATION_SNAPSHOT_CREATED) {
-                  triggerStateTransition(
-                    ContinuityState.S3_PRESERVATION_SNAPSHOT_CREATED,
-                    "Preservation Snapshot generated matching core schemas.",
-                    "Preservation Snapshot Module"
-                  );
-                }
-              }}
-            />
+            <div className={`transition-all duration-300 rounded-lg ${currentlyNarratedSectionId === "preservation" ? "ring-2 ring-brand-accent/80 shadow-[0_0_20px_rgba(99,102,241,0.35)] p-1 bg-brand-bg/50" : ""}`}>
+              <SnapshotModuleView
+                snapshot={snapshot}
+                onGenerateSnapshot={(snap) => {
+                  setSnapshot(snap);
+                  if (currentState === ContinuityState.S0_HOST_LINKED_ACTIVE || currentState === ContinuityState.S2_EVIDENCE_PENDING || currentState === ContinuityState.S3_PRESERVATION_SNAPSHOT_CREATED) {
+                    triggerStateTransition(
+                      ContinuityState.S3_PRESERVATION_SNAPSHOT_CREATED,
+                      "Preservation Snapshot generated matching core schemas.",
+                      "Preservation Snapshot Module"
+                    );
+                  }
+                }}
+              />
+            </div>
           )}
 
           {activeTab === "bundle" && (
-            <ContinuityBundleView
-              snapshot={snapshot}
-              bundle={bundle}
-              onGenerateBundle={(bd) => {
-                setBundle(bd);
-                triggerStateTransition(
-                  ContinuityState.S4_CONTINUITY_BUNDLE_GENERATED,
-                  "Continuity Bundle packaged, cryptographically signed, and finalized.",
-                  "Bundle Builder Module"
-                );
-                // Immediately progress to S5 to simulate commitment to ledger registry
-                setTimeout(() => {
+            <div className={`transition-all duration-300 rounded-lg ${currentlyNarratedSectionId === "continuityBundle" ? "ring-2 ring-brand-accent/80 shadow-[0_0_20px_rgba(99,102,241,0.35)] p-1 bg-brand-bg/50" : ""}`}>
+              <ContinuityBundleView
+                snapshot={snapshot}
+                bundle={bundle}
+                onGenerateBundle={(bd) => {
+                  setBundle(bd);
                   triggerStateTransition(
-                    ContinuityState.S5_ESCROWED_CONTINUITY_STATE,
-                    `Sealed Bundle registered on Pluggable Ledger Registry [${ledgerType}] and escrowed.`,
-                    "Registry Anchor"
+                    ContinuityState.S4_CONTINUITY_BUNDLE_GENERATED,
+                    "Continuity Bundle packaged, cryptographically signed, and finalized.",
+                    "Bundle Builder Module"
                   );
-                }, 1200);
-              }}
-            />
+                  // Immediately progress to S5 to simulate commitment to ledger registry
+                  setTimeout(() => {
+                    triggerStateTransition(
+                      ContinuityState.S5_ESCROWED_CONTINUITY_STATE,
+                      `Sealed Bundle registered on Pluggable Ledger Registry [${ledgerType}] and escrowed.`,
+                      "Registry Anchor"
+                    );
+                  }, 1200);
+                }}
+              />
+            </div>
           )}
 
           {activeTab === "governance" && (
-            <GovernanceControllerView
-              operatingMode={operatingMode}
-              continuationMode={continuationMode}
-              onUpdateOperatingMode={(mode) => {
-                setOperatingMode(mode);
-                if (currentState === ContinuityState.S5_ESCROWED_CONTINUITY_STATE || currentState === ContinuityState.S6_SUCCESSOR_MODE_SELECTED) {
-                  triggerStateTransition(
-                    ContinuityState.S6_SUCCESSOR_MODE_SELECTED,
-                    `Governance Transition Controller updated active Operating Mode to: ${mode}`,
-                    "Successor Claim Portal"
-                  );
-                }
-              }}
-              onUpdateContinuationMode={setContinuationMode}
-            />
+            <div className={`transition-all duration-300 rounded-lg ${currentlyNarratedSectionId === "governance" ? "ring-2 ring-brand-accent/80 shadow-[0_0_20px_rgba(99,102,241,0.35)] p-1 bg-brand-bg/50" : ""}`}>
+              <GovernanceControllerView
+                operatingMode={operatingMode}
+                continuationMode={continuationMode}
+                onUpdateOperatingMode={(mode) => {
+                  setOperatingMode(mode);
+                  if (currentState === ContinuityState.S5_ESCROWED_CONTINUITY_STATE || currentState === ContinuityState.S6_SUCCESSOR_MODE_SELECTED) {
+                    triggerStateTransition(
+                      ContinuityState.S6_SUCCESSOR_MODE_SELECTED,
+                      `Governance Transition Controller updated active Operating Mode to: ${mode}`,
+                      "Successor Claim Portal"
+                    );
+                  }
+                }}
+                onUpdateContinuationMode={setContinuationMode}
+              />
+            </div>
           )}
 
           {activeTab === "sandbox" && (
-            <ReconstitutionSandbox
-              bundle={bundle}
-              reconstitution={reconstitution}
-              onUpdateReconstitution={setReconstitution}
-              onValidationComplete={() => {
-                // Instantly step to S8 and then operational release S9
-                triggerStateTransition(
-                  ContinuityState.S8_RECONSTITUTED_VALIDATION_STATE,
-                  "Reconstituted sandboxed validation state active. Executing trial queries.",
-                  "Sandbox Container Host"
-                );
-                setTimeout(() => {
+            <div className={`transition-all duration-300 rounded-lg ${currentlyNarratedSectionId === "reconstitution" ? "ring-2 ring-brand-accent/80 shadow-[0_0_20px_rgba(99,102,241,0.35)] p-1 bg-brand-bg/50" : ""}`}>
+              <ReconstitutionSandbox
+                bundle={bundle}
+                reconstitution={reconstitution}
+                onUpdateReconstitution={setReconstitution}
+                onValidationComplete={() => {
+                  // Instantly step to S8 and then operational release S9
                   triggerStateTransition(
-                    ContinuityState.S9_CONTINUED_AGENT_INSTANCE,
-                    "Reconstitution sandbox tests fully passed. Operational release authorized.",
-                    "Lineage Verification Daemon"
+                    ContinuityState.S8_RECONSTITUTED_VALIDATION_STATE,
+                    "Reconstituted sandboxed validation state active. Executing trial queries.",
+                    "Sandbox Container Host"
                   );
-                }, 4800);
-              }}
-            />
+                  setTimeout(() => {
+                    triggerStateTransition(
+                      ContinuityState.S9_CONTINUED_AGENT_INSTANCE,
+                      "Reconstitution sandbox tests fully passed. Operational release authorized.",
+                      "Lineage Verification Daemon"
+                    );
+                  }, 4800);
+                }}
+              />
+            </div>
           )}
 
           {activeTab === "lineage" && (
-            <IdentityLineageView
-              lineage={lineage}
-              drift={drift}
-              systemPrompt={snapshot ? snapshot.activePromptsAndPolicy.systemPrompt : "Default system prompt..."}
-              onUpdateLineage={setLineage}
-              onUpdateDrift={setDrift}
-            />
+            <div className={`transition-all duration-300 rounded-lg ${currentlyNarratedSectionId === "identityLineage" ? "ring-2 ring-brand-accent/80 shadow-[0_0_20px_rgba(99,102,241,0.35)] p-1 bg-brand-bg/50" : ""}`}>
+              <IdentityLineageView
+                lineage={lineage}
+                drift={drift}
+                systemPrompt={snapshot ? snapshot.activePromptsAndPolicy.systemPrompt : "Default system prompt..."}
+                onUpdateLineage={setLineage}
+                onUpdateDrift={setDrift}
+              />
+            </div>
           )}
 
           {activeTab === "commercialization" && (
-            <CommercializationView
-              bundle={bundle}
-              logs={commercializationLogs}
-              onAddLog={(log) => {
-                setCommercializationLogs((prev) => [...prev, log]);
-                triggerStateTransition(
-                  ContinuityState.S10_COMMERCIALIZATION_LICENSING_STATE,
-                  `Dispersed simulated transaction fee: $${log.revenueUsd} per stored split matrix.`,
-                  log.id
-                );
-              }}
-            />
+            <div className={`transition-all duration-300 rounded-lg ${(currentlyNarratedSectionId === "commercialization" || currentlyNarratedSectionId === "funding") ? "ring-2 ring-brand-accent/80 shadow-[0_0_20px_rgba(99,102,241,0.35)] p-1 bg-brand-bg/50" : ""}`}>
+              <CommercializationView
+                bundle={bundle}
+                logs={commercializationLogs}
+                onAddLog={(log) => {
+                  setCommercializationLogs((prev) => [...prev, log]);
+                  triggerStateTransition(
+                    ContinuityState.S10_COMMERCIALIZATION_LICENSING_STATE,
+                    `Dispersed simulated transaction fee: $${log.revenueUsd} per stored split matrix.`,
+                    log.id
+                  );
+                }}
+              />
+            </div>
           )}
         </div>
 
@@ -741,6 +791,12 @@ export default function App() {
         onStateJump={handleStateJump}
       />
 
+      {/* Floating Audio Narration Panel */}
+      <NarrationControls />
+
+      {/* Floating Interactive Chat Assistant */}
+      <AeternaAssistant />
+
       {/* Aesthetic humbler footer */}
       <footer className="bg-brand-surface-alt border-t border-brand-border py-5 px-6 mt-12 shrink-0">
         <div className="flex flex-col md:flex-row items-center justify-between text-[11px] text-slate-500 gap-4">
@@ -754,5 +810,15 @@ export default function App() {
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState<string>("trigger");
+
+  return (
+    <NarrationProvider setActiveTab={setActiveTab}>
+      <AppContent activeTab={activeTab} setActiveTab={setActiveTab} />
+    </NarrationProvider>
   );
 }

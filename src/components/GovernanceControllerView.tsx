@@ -1,6 +1,7 @@
 import React from "react";
 import { OperatingMode, ModelContinuationMode } from "../types";
 import { Gavel, Users, ShieldAlert, FileSliders, Eye, EyeOff, Scale, HelpCircle } from "lucide-react";
+import { SectionNarrationHeader } from "./SectionNarrationHeader";
 
 interface GovernanceControllerViewProps {
   operatingMode: OperatingMode;
@@ -94,6 +95,7 @@ export const GovernanceControllerView: React.FC<GovernanceControllerViewProps> =
 
   return (
     <div className="bg-brand-surface-alt border border-brand-border rounded p-6 space-y-6" id="governance-controller-card">
+      <SectionNarrationHeader sectionId="governance" />
       <div className="flex items-center justify-between border-b border-brand-border pb-4">
         <div>
           <h2 className="text-sm font-bold text-slate-100 uppercase tracking-wider flex items-center gap-2 font-mono">

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ContinuityBundle, PreservationSnapshot } from "../types";
 import { sha256, calculateMerkleRoot } from "../utils/crypto";
 import { FolderGit2, Fingerprint, Gavel, HelpCircle, Key, Percent, CheckCircle, AlertTriangle, Coins } from "lucide-react";
+import { SectionNarrationHeader } from "./SectionNarrationHeader";
 
 interface ContinuityBundleViewProps {
   snapshot: PreservationSnapshot | null;
@@ -128,6 +129,7 @@ export const ContinuityBundleView: React.FC<ContinuityBundleViewProps> = ({
 
   return (
     <div className="bg-brand-surface-alt border border-brand-border rounded p-6 space-y-6" id="continuity-bundle-card">
+      <SectionNarrationHeader sectionId="continuityBundle" />
       <div className="flex items-center justify-between border-b border-brand-border pb-4">
         <div>
           <h2 className="text-sm font-bold text-slate-100 uppercase tracking-wider flex items-center gap-2 font-mono">

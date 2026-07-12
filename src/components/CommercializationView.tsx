@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ContinuityBundle, CommercializationLog } from "../types";
 import { Coins, CheckCircle, AlertTriangle, Play, HelpCircle, DollarSign, ArrowRight } from "lucide-react";
+import { SectionNarrationHeader } from "./SectionNarrationHeader";
 
 interface CommercializationViewProps {
   bundle: ContinuityBundle | null;
@@ -52,6 +53,10 @@ export const CommercializationView: React.FC<CommercializationViewProps> = ({
 
   return (
     <div className="bg-brand-surface-alt border border-brand-border rounded p-6 space-y-6" id="commercialization-card">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
+        <SectionNarrationHeader sectionId="funding" />
+        <SectionNarrationHeader sectionId="commercialization" />
+      </div>
       <div className="flex items-center justify-between border-b border-brand-border pb-4">
         <div>
           <h2 className="text-sm font-bold text-slate-100 uppercase tracking-wider flex items-center gap-2 font-mono">

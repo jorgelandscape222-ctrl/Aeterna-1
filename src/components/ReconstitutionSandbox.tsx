@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ReconstitutionStatus, ContinuityBundle } from "../types";
 import { Cpu, CheckCircle, AlertCircle, RefreshCw, Terminal, Eye, Link2, ShieldCheck } from "lucide-react";
+import { SectionNarrationHeader } from "./SectionNarrationHeader";
 
 interface ReconstitutionSandboxProps {
   bundle: ContinuityBundle | null;
@@ -145,6 +146,7 @@ export const ReconstitutionSandbox: React.FC<ReconstitutionSandboxProps> = ({
 
   return (
     <div className="bg-brand-surface-alt border border-brand-border rounded p-6 space-y-6" id="reconstitution-sandbox-card">
+      <SectionNarrationHeader sectionId="reconstitution" />
       <div className="flex items-center justify-between border-b border-brand-border pb-4">
         <div>
           <h2 className="text-sm font-bold text-slate-100 uppercase tracking-wider flex items-center gap-2 font-mono">

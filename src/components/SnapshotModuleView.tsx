@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { PreservationSnapshot } from "../types";
 import { sha256 } from "../utils/crypto";
 import { ShieldCheck, Database, Zap, Sparkles, Check, Download } from "lucide-react";
+import { SectionNarrationHeader } from "./SectionNarrationHeader";
 
 interface SnapshotModuleViewProps {
   snapshot: PreservationSnapshot | null;
@@ -96,6 +97,7 @@ export const SnapshotModuleView: React.FC<SnapshotModuleViewProps> = ({
 
   return (
     <div className="bg-brand-surface-alt border border-brand-border rounded p-6 space-y-6" id="snapshot-module-card">
+      <SectionNarrationHeader sectionId="preservation" />
       <div className="flex items-center justify-between border-b border-brand-border pb-4">
         <div>
           <h2 className="text-sm font-bold text-slate-100 uppercase tracking-wider flex items-center gap-2 font-mono">
