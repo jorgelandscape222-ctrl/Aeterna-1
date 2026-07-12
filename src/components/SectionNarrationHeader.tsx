@@ -40,8 +40,8 @@ export const SectionNarrationHeader: React.FC<SectionNarrationHeaderProps> = ({ 
     >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
         <div className="flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${isPlaying ? "bg-brand-accent animate-pulse" : "bg-slate-700"}`} />
-          <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+          <div className={`w-2 h-2 rounded-full ${isPlaying ? "bg-brand-accent animate-pulse" : "bg-brand-border"}`} />
+          <span className="text-[10px] uppercase font-bold text-brand-ink-dim tracking-wider">
             Audio Assistant / {script.title}
           </span>
         </div>
@@ -71,7 +71,7 @@ export const SectionNarrationHeader: React.FC<SectionNarrationHeaderProps> = ({ 
           {/* Transcript Toggle */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="flex items-center gap-1 text-[10px] font-bold text-slate-400 hover:text-slate-200 px-2 py-1 rounded border border-brand-border/50 hover:border-slate-500 transition cursor-pointer select-none"
+            className="flex items-center gap-1 text-[10px] font-bold text-brand-ink-dim hover:text-brand-ink px-2 py-1 rounded border border-brand-border/50 hover:border-brand-border transition cursor-pointer select-none"
             title="Toggle Transcript Text"
           >
             <FileText className="w-3 h-3" />
@@ -83,7 +83,7 @@ export const SectionNarrationHeader: React.FC<SectionNarrationHeaderProps> = ({ 
       {/* Collapsible exact transcript */}
       {isOpen && (
         <div 
-          className="p-3 bg-brand-surface rounded border border-brand-border/60 text-[11px] leading-relaxed text-slate-300 font-sans italic"
+          className="p-3 bg-brand-surface rounded border border-brand-border/60 text-[11px] leading-relaxed text-brand-ink font-sans italic"
           id={`transcript-text-${sectionId}`}
         >
           <span className="font-mono text-[9px] uppercase font-bold text-brand-accent tracking-widest block mb-1">

@@ -62,8 +62,8 @@ export const AeternaAssistant: React.FC = () => {
     // Bold: **text**
     let formatted = text.replace(/\*\*([^*]+)\*\*/g, "<strong class='text-white font-semibold'>$1</strong>");
     // Italic: *text* or _text_
-    formatted = formatted.replace(/\*([^*]+)\*/g, "<em class='text-slate-300 italic'>$1</em>");
-    formatted = formatted.replace(/_([^_]+)_/g, "<em class='text-slate-300 italic'>$1</em>");
+    formatted = formatted.replace(/\*([^*]+)\*/g, "<em class='text-brand-ink-dim italic'>$1</em>");
+    formatted = formatted.replace(/_([^_]+)_/g, "<em class='text-brand-ink-dim italic'>$1</em>");
     // Inline code: `code`
     formatted = formatted.replace(/`([^`]+)`/g, "<code class='bg-slate-950 border border-brand-border/40 px-1 py-0.5 rounded text-indigo-300 font-mono text-[10px]'>$1</code>");
     return formatted;
@@ -77,7 +77,7 @@ export const AeternaAssistant: React.FC = () => {
       if (trimmedPara.startsWith("- ") || trimmedPara.startsWith("* ")) {
         const items = para.split(/\n/).map(item => item.replace(/^[\s-*]+/, "").trim());
         return (
-          <ul key={pIdx} className="list-disc pl-4 mb-3 space-y-1.5 text-xs text-slate-300 font-sans">
+          <ul key={pIdx} className="list-disc pl-4 mb-3 space-y-1.5 text-xs text-brand-ink font-sans">
             {items.map((item, iIdx) => (
               <li key={iIdx} dangerouslySetInnerHTML={{ __html: formatInlineMarkdown(item) }} />
             ))}
@@ -87,7 +87,7 @@ export const AeternaAssistant: React.FC = () => {
       return (
         <p 
           key={pIdx} 
-          className="mb-2 text-xs leading-relaxed text-slate-300 font-sans"
+          className="mb-2 text-xs leading-relaxed text-brand-ink font-sans"
           dangerouslySetInnerHTML={{ __html: formatInlineMarkdown(para) }}
         />
       );
@@ -234,10 +234,10 @@ export const AeternaAssistant: React.FC = () => {
                     <Sparkles className="w-4 h-4 text-brand-accent" />
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold text-slate-100 uppercase tracking-widest leading-none">
+                    <h3 className="text-xs font-bold text-brand-ink uppercase tracking-widest leading-none">
                       Aeterna Assistant
                     </h3>
-                    <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider block mt-0.5">
+                    <span className="text-[9px] text-brand-ink-dim font-semibold uppercase tracking-wider block mt-0.5">
                       Continuity Knowledge base
                     </span>
                   </div>
@@ -247,7 +247,7 @@ export const AeternaAssistant: React.FC = () => {
                   {/* Clear button */}
                   <button
                     onClick={handleClear}
-                    className="p-1.5 hover:bg-slate-800 rounded text-slate-400 hover:text-rose-400 transition cursor-pointer"
+                    className="p-1.5 hover:bg-brand-surface-alt rounded text-brand-ink-dim hover:text-rose-400 transition cursor-pointer"
                     title="Clear Conversation"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -256,7 +256,7 @@ export const AeternaAssistant: React.FC = () => {
                   {/* Close button */}
                   <button
                     onClick={() => setIsOpen(false)}
-                    className="p-1.5 hover:bg-slate-800 rounded text-slate-400 hover:text-white transition cursor-pointer"
+                    className="p-1.5 hover:bg-brand-surface-alt rounded text-brand-ink-dim hover:text-white transition cursor-pointer"
                     title="Close Panel"
                   >
                     <X className="w-3.5 h-3.5" />
@@ -274,7 +274,7 @@ export const AeternaAssistant: React.FC = () => {
                     }`}
                   >
                     {/* Timestamp / Sender Indicator */}
-                    <span className="text-[9px] text-slate-500 uppercase tracking-widest mb-1 font-bold">
+                    <span className="text-[9px] text-brand-ink-dim uppercase tracking-widest mb-1 font-bold">
                       {msg.role === "user" ? "You" : "Protocol Assistant"}
                     </span>
 
@@ -282,8 +282,8 @@ export const AeternaAssistant: React.FC = () => {
                     <div
                       className={`p-3 rounded-lg border text-xs leading-relaxed ${
                         msg.role === "user"
-                          ? "bg-brand-surface border-brand-border text-slate-200 rounded-tr-none"
-                          : "bg-slate-900/60 border-brand-accent/20 text-slate-300 rounded-tl-none shadow-inner"
+                          ? "bg-brand-surface border-brand-border text-brand-ink rounded-tr-none"
+                          : "bg-brand-bg/60 border-brand-accent/20 text-brand-ink rounded-tl-none shadow-inner"
                       }`}
                     >
                       {msg.role === "assistant" ? (
@@ -298,10 +298,10 @@ export const AeternaAssistant: React.FC = () => {
                 {/* Thinking Indicator */}
                 {isThinking && (
                   <div className="flex flex-col items-start max-w-[85%]">
-                    <span className="text-[9px] text-slate-500 uppercase tracking-widest mb-1 font-bold">
+                    <span className="text-[9px] text-brand-ink-dim uppercase tracking-widest mb-1 font-bold">
                       Protocol Assistant
                     </span>
-                    <div className="p-3 bg-slate-900/60 border border-brand-accent/20 rounded-lg rounded-tl-none text-slate-400 text-xs flex items-center gap-2">
+                    <div className="p-3 bg-brand-bg/60 border border-brand-accent/20 rounded-lg rounded-tl-none text-brand-ink-dim text-xs flex items-center gap-2">
                       <span className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-accent opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-accent"></span>
@@ -328,7 +328,7 @@ export const AeternaAssistant: React.FC = () => {
               {/* Suggestions chips when input is empty */}
               {inputValue.trim() === "" && (
                 <div className="p-3 bg-brand-surface/20 border-t border-brand-border/40 space-y-1.5">
-                  <span className="text-[8px] uppercase tracking-wider text-slate-500 font-bold block">
+                  <span className="text-[8px] uppercase tracking-wider text-brand-ink-dim font-bold block">
                     Quick suggestions
                   </span>
                   <div className="flex flex-wrap gap-1.5">
@@ -338,7 +338,7 @@ export const AeternaAssistant: React.FC = () => {
                         onClick={() => {
                           setInputValue(chip);
                         }}
-                        className="text-[9px] font-semibold font-mono text-slate-400 hover:text-white bg-brand-surface hover:bg-slate-800 border border-brand-border rounded-full px-2 py-1 transition cursor-pointer flex items-center gap-1"
+                        className="text-[9px] font-semibold font-mono text-brand-ink-dim hover:text-white bg-brand-surface hover:bg-brand-surface-alt border border-brand-border rounded-full px-2 py-1 transition cursor-pointer flex items-center gap-1"
                       >
                         {chip} <ArrowUpRight className="w-2.5 h-2.5 text-brand-accent" />
                       </button>
@@ -356,13 +356,13 @@ export const AeternaAssistant: React.FC = () => {
                   onKeyDown={handleKeyDown}
                   disabled={isThinking}
                   placeholder="Query Aeterna core documentation..."
-                  className="flex-1 bg-brand-bg text-slate-200 border border-brand-border rounded px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-brand-accent focus:border-brand-accent disabled:opacity-50 transition"
+                  className="flex-1 bg-brand-bg text-brand-ink border border-brand-border rounded px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-brand-accent focus:border-brand-accent disabled:opacity-50 transition"
                 />
 
                 <button
                   onClick={handleSend}
                   disabled={!inputValue.trim() || isThinking}
-                  className="p-2.5 bg-brand-accent hover:bg-indigo-500 disabled:bg-slate-800 text-white disabled:text-slate-500 rounded transition-all cursor-pointer shadow-md shadow-brand-accent/25 flex items-center justify-center shrink-0"
+                  className="p-2.5 bg-brand-accent hover:bg-indigo-500 disabled:bg-brand-surface-alt text-white disabled:text-brand-ink-dim rounded transition-all cursor-pointer shadow-md shadow-brand-accent/25 flex items-center justify-center shrink-0"
                   title="Send message"
                 >
                   <Send className="w-3.5 h-3.5" />

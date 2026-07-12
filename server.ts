@@ -101,8 +101,14 @@ async function startServer() {
         }
       });
 
+      // Cap the conversation history sent to the model to the most recent ~12 messages
+      const maxHistoryCount = 12;
+      const recentMessages = messages.length > maxHistoryCount 
+        ? messages.slice(-maxHistoryCount) 
+        : messages;
+
       // Map incoming messages to Gemini Content array
-      const contents = messages.map((m: any) => ({
+      const contents = recentMessages.map((m: any) => ({
         role: m.role === "user" ? "user" : "model",
         parts: [{ text: m.content }]
       }));
@@ -127,7 +133,7 @@ async function startServer() {
         return;
       }
 
-      res.status(500).json({ error: error.message || "Internal Server Error" });
+      res.status(500).json({ error: "The assistant is temporarily unavailable. Please try again." });
     }
   });
 

@@ -42,7 +42,7 @@ export const ContinuityBundleView: React.FC<ContinuityBundleViewProps> = ({
       // Layer 1: Identity descriptor
       identityDescriptor: {
         canonicalId: "AI-ID-PL-22019488",
-        originalHostEmail: "jorgelandscape222@gmail.com",
+        originalHostEmail: "agent-host@example.com",
         createdAtTimestamp: new Date(Date.now() - 31536000000).toISOString(), // 1 year ago
         pluggableLedgerReference: "Hyperledger/Firestore-Signed:TX-88301",
       },

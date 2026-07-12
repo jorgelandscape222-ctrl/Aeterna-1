@@ -58,7 +58,7 @@ export const NarrationControls: React.FC = () => {
       {/* 1. Subtitle/Transcript Sub-panel (Expander Caption Box) */}
       {showTranscript && currentlyNarratedText && !isStopped && (
         <div 
-          className="w-full bg-slate-900/95 border border-brand-accent/40 rounded p-3 text-xs leading-relaxed text-slate-100 shadow-2xl backdrop-blur-md animate-fade-in"
+          className="w-full bg-brand-surface-alt/95 border border-brand-accent/40 rounded p-3 text-xs leading-relaxed text-brand-ink shadow-2xl backdrop-blur-md animate-fade-in"
           id="narration-transcript-panel"
         >
           <div className="flex items-center justify-between border-b border-brand-border/60 pb-1.5 mb-1.5">
@@ -68,12 +68,12 @@ export const NarrationControls: React.FC = () => {
             </span>
             <button 
               onClick={() => setShowTranscript(false)}
-              className="text-[9px] text-slate-500 hover:text-slate-300 font-bold uppercase cursor-pointer"
+              className="text-[9px] text-brand-ink-dim hover:text-brand-ink font-bold uppercase cursor-pointer"
             >
               Hide Captions
             </button>
           </div>
-          <p className="font-sans text-slate-200 antialiased italic">
+          <p className="font-sans text-brand-ink antialiased italic">
             "{currentlyNarratedText}"
           </p>
         </div>
@@ -112,13 +112,13 @@ export const NarrationControls: React.FC = () => {
                 e.stopPropagation();
                 updatePreferences({ muted: !preferences.muted });
               }}
-              className={`p-1.5 rounded hover:bg-brand-surface/80 text-slate-400 hover:text-white transition cursor-pointer`}
+              className={`p-1.5 rounded hover:bg-brand-surface/80 text-brand-ink-dim hover:text-white transition cursor-pointer`}
               title={preferences.muted ? "Unmute" : "Mute"}
             >
               {preferences.muted ? <VolumeX className="w-3.5 h-3.5 text-rose-400" /> : <Volume2 className="w-3.5 h-3.5" />}
             </button>
 
-            {isExpanded ? <ChevronDown className="w-4 h-4 text-slate-400" /> : <ChevronUp className="w-4 h-4 text-slate-400" />}
+            {isExpanded ? <ChevronDown className="w-4 h-4 text-brand-ink-dim" /> : <ChevronUp className="w-4 h-4 text-brand-ink-dim" />}
           </div>
         </div>
 
@@ -129,7 +129,7 @@ export const NarrationControls: React.FC = () => {
             {isTourActive && (
               <div className="space-y-1.5 border-b border-brand-border/40 pb-2.5">
                 <div className="flex justify-between items-center text-[10px]">
-                  <span className="text-slate-400 font-bold uppercase">
+                  <span className="text-brand-ink-dim font-bold uppercase">
                     {TOUR_STEPS[tourStepIndex]?.title || "Walkthrough"}
                   </span>
                   <button 
@@ -157,7 +157,7 @@ export const NarrationControls: React.FC = () => {
                   <button
                     onClick={prevTourStep}
                     disabled={tourStepIndex <= 0}
-                    className="p-1.5 bg-brand-bg hover:bg-brand-surface-alt border border-brand-border hover:border-slate-600 rounded text-slate-300 disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer"
+                    className="p-1.5 bg-brand-bg hover:bg-brand-surface-alt border border-brand-border rounded text-brand-ink disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer"
                     title="Previous Stage"
                   >
                     <SkipBack className="w-3.5 h-3.5" />
@@ -178,7 +178,7 @@ export const NarrationControls: React.FC = () => {
                     {isPlaying ? (
                       <button
                         onClick={pause}
-                        className="flex items-center gap-1 text-xs font-bold bg-brand-bg border border-brand-border hover:bg-brand-surface-alt text-slate-200 px-3 py-1.5 rounded transition cursor-pointer"
+                        className="flex items-center gap-1 text-xs font-bold bg-brand-bg border border-brand-border hover:bg-brand-surface-alt text-brand-ink px-3 py-1.5 rounded transition cursor-pointer"
                         title="Pause"
                       >
                         <Pause className="w-3 h-3 fill-current" /> Pause
@@ -199,7 +199,7 @@ export const NarrationControls: React.FC = () => {
                 {!isStopped && (
                   <button
                     onClick={stop}
-                    className="p-1.5 bg-brand-bg hover:bg-brand-surface-alt border border-brand-border hover:border-slate-600 rounded text-rose-400 transition cursor-pointer"
+                    className="p-1.5 bg-brand-bg hover:bg-brand-surface-alt border border-brand-border rounded text-rose-400 transition cursor-pointer"
                     title="Stop Narration"
                   >
                     <Square className="w-3.5 h-3.5 fill-current" />
@@ -211,7 +211,7 @@ export const NarrationControls: React.FC = () => {
                   <button
                     onClick={nextTourStep}
                     disabled={tourStepIndex >= TOUR_STEPS.length - 1}
-                    className="p-1.5 bg-brand-bg hover:bg-brand-surface-alt border border-brand-border hover:border-slate-600 rounded text-slate-300 disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer"
+                    className="p-1.5 bg-brand-bg hover:bg-brand-surface-alt border border-brand-border rounded text-brand-ink disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer"
                     title="Next Stage"
                   >
                     <SkipForward className="w-3.5 h-3.5" />
@@ -224,7 +224,7 @@ export const NarrationControls: React.FC = () => {
                 {currentlyNarratedText && isStopped && (
                   <button
                     onClick={() => setShowTranscript(!showTranscript)}
-                    className={`p-1.5 rounded text-slate-400 hover:text-white transition cursor-pointer ${
+                    className={`p-1.5 rounded text-brand-ink-dim hover:text-white transition cursor-pointer ${
                       showTranscript ? "bg-brand-accent/20 text-brand-accent" : ""
                     }`}
                     title="Toggle Subtitle Transcript"
@@ -238,7 +238,7 @@ export const NarrationControls: React.FC = () => {
                   className={`text-[10px] font-bold px-2 py-1 border rounded transition cursor-pointer font-mono ${
                     showSettings 
                       ? "bg-brand-accent border-brand-accent text-white" 
-                      : "bg-brand-bg border-brand-border hover:border-slate-600 text-slate-400"
+                      : "bg-brand-bg border-brand-border hover:border-brand-border text-brand-ink-dim"
                   }`}
                 >
                   Configure
@@ -251,11 +251,11 @@ export const NarrationControls: React.FC = () => {
               <div className="bg-brand-bg p-3 rounded border border-brand-border/60 space-y-2.5 text-[10px] animate-fade-in">
                 {/* Voice picker */}
                 <div className="space-y-1">
-                  <label className="text-slate-500 font-bold uppercase tracking-wider block">Voice Engine</label>
+                  <label className="text-brand-ink-dim font-bold uppercase tracking-wider block">Voice Engine</label>
                   <select
                     value={preferences.voiceURI}
                     onChange={(e) => updatePreferences({ voiceURI: e.target.value })}
-                    className="w-full bg-brand-surface text-slate-200 border border-brand-border rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brand-accent text-[9px] font-mono leading-tight"
+                    className="w-full bg-brand-surface text-brand-ink border border-brand-border rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brand-accent text-[9px] font-mono leading-tight"
                   >
                     {displayVoices.map((voice) => (
                       <option key={voice.voiceURI} value={voice.voiceURI}>
@@ -267,12 +267,12 @@ export const NarrationControls: React.FC = () => {
 
                 {/* Speed rate control slider */}
                 <div className="space-y-1">
-                  <div className="flex justify-between text-slate-500 font-bold uppercase tracking-wider">
+                  <div className="flex justify-between text-brand-ink-dim font-bold uppercase tracking-wider">
                     <span>Narration Speed</span>
                     <span className="text-brand-accent font-semibold">{preferences.rate}x</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-slate-500 font-mono">0.75x</span>
+                    <span className="text-brand-ink-dim font-mono">0.75x</span>
                     <input
                       type="range"
                       min="0.75"
@@ -282,7 +282,7 @@ export const NarrationControls: React.FC = () => {
                       onChange={(e) => updatePreferences({ rate: parseFloat(e.target.value) })}
                       className="flex-1 accent-brand-accent h-1 bg-brand-surface rounded-lg appearance-none cursor-pointer"
                     />
-                    <span className="text-slate-500 font-mono">1.5x</span>
+                    <span className="text-brand-ink-dim font-mono">1.5x</span>
                   </div>
                 </div>
               </div>
@@ -292,7 +292,7 @@ export const NarrationControls: React.FC = () => {
             {isStopped && (
               <button
                 onClick={startTour}
-                className="w-full py-1.5 px-3 bg-brand-surface-alt border border-brand-border hover:border-brand-accent/50 text-slate-300 hover:text-white rounded text-[10px] font-bold uppercase flex items-center justify-center gap-1.5 transition cursor-pointer"
+                className="w-full py-1.5 px-3 bg-brand-surface-alt border border-brand-border hover:border-brand-accent/50 text-brand-ink hover:text-white rounded text-[10px] font-bold uppercase flex items-center justify-center gap-1.5 transition cursor-pointer"
               >
                 <Sparkles className="w-3.5 h-3.5 text-brand-accent" /> Play Architectural Walkthrough
               </button>

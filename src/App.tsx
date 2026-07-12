@@ -359,7 +359,7 @@ function AppContent({ activeTab, setActiveTab }: AppContentProps) {
         createdAt: new Date().toISOString(),
         identityDescriptor: {
           canonicalId: "AI-ID-PL-22019488",
-          originalHostEmail: "jorgelandscape222@gmail.com",
+          originalHostEmail: "agent-host@example.com",
           createdAtTimestamp: new Date().toISOString(),
           pluggableLedgerReference: "Hyperledger/Firestore-Signed:TX-88301",
         },
@@ -456,7 +456,17 @@ function AppContent({ activeTab, setActiveTab }: AppContentProps) {
   const isScenarioCompleted = selectedScenario ? scenarioStepIndex === selectedScenario.steps.length - 1 : false;
 
   return (
-    <div className="min-h-screen bg-brand-bg text-[#D1D5DB] flex flex-col font-sans select-none">
+    <div className="min-h-screen bg-transparent text-[#D1D5DB] flex flex-col font-sans select-none relative">
+      {/* Layer 3: Faint AETERNA Wordmark Watermark */}
+      <div 
+        aria-hidden="true" 
+        className="fixed inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden"
+        style={{ zIndex: -10 }}
+      >
+        <div className="font-extrabold tracking-[0.1em] text-[rgba(255,255,255,0.04)] uppercase whitespace-nowrap text-center select-none" style={{ fontSize: "clamp(2.5rem, 18vw, 15rem)" }}>
+          AETERNA
+        </div>
+      </div>
       
       {/* Geometric Balance Header */}
       <header className="border-b border-brand-border bg-brand-surface-alt flex flex-col gap-3 px-3 py-3 sm:px-6 sm:py-3.5 shrink-0 sticky top-0 z-40 sm:flex-row sm:items-center sm:justify-between">
@@ -558,8 +568,8 @@ function AppContent({ activeTab, setActiveTab }: AppContentProps) {
                   onClick={() => handleLoadScenario(sc.id)}
                   className={`text-xs px-3 py-1.5 rounded transition font-mono border ${
                     activeScenarioId === sc.id
-                      ? "bg-brand-accent border-brand-accent text-white font-semibold shadow-sm shadow-brand-accent/25"
-                      : "bg-brand-bg border-brand-border hover:border-slate-600 text-slate-400"
+                      ? "bg-brand-accent border-brand-accent text-white font-semibold shadow-brand-accent-glow"
+                      : "bg-brand-bg border-brand-border hover:border-brand-border text-brand-ink-dim"
                   }`}
                   id={`scenario-select-${sc.id}`}
                 >
@@ -623,8 +633,8 @@ function AppContent({ activeTab, setActiveTab }: AppContentProps) {
               onClick={() => handleTabClick(tab.id)}
               className={`py-3 px-3 sm:px-4 text-[10px] font-bold tracking-wider uppercase border-b-2 transition-all shrink-0 flex items-center gap-1.5 ${
                 activeTab === tab.id
-                  ? "border-brand-accent text-white bg-brand-surface-alt"
-                  : "border-transparent text-slate-500 hover:text-slate-300 hover:bg-brand-surface-alt/40"
+                  ? "border-brand-accent text-white bg-brand-surface-alt shadow-brand-accent-glow"
+                  : "border-transparent text-brand-ink-dim hover:text-brand-ink hover:bg-brand-surface-alt/40"
               }`}
               id={`tab-btn-${tab.id}`}
               title={tab.fullLabel}
@@ -642,7 +652,7 @@ function AppContent({ activeTab, setActiveTab }: AppContentProps) {
         {/* Tab content panels */}
         <div className="space-y-6">
           {activeTab === "trigger" && (
-            <div className={`transition-all duration-300 rounded-lg ${currentlyNarratedSectionId === "triggerDetection" ? "ring-2 ring-brand-accent/80 shadow-[0_0_20px_rgba(99,102,241,0.35)] p-1 bg-brand-bg/50" : ""}`}>
+            <div className={`transition-all duration-300 rounded-lg ${currentlyNarratedSectionId === "triggerDetection" ? "ring-2 ring-brand-accent/40 shadow-brand-accent-glow p-1 bg-brand-bg/50" : ""}`}>
               <TriggerEngineView
                 triggerStatus={triggerStatus}
                 onUpdateEvidence={(items) => setTriggerStatus({ ...triggerStatus, evidenceItems: items })}
@@ -663,7 +673,7 @@ function AppContent({ activeTab, setActiveTab }: AppContentProps) {
           )}
 
           {activeTab === "snapshot" && (
-            <div className={`transition-all duration-300 rounded-lg ${currentlyNarratedSectionId === "preservation" ? "ring-2 ring-brand-accent/80 shadow-[0_0_20px_rgba(99,102,241,0.35)] p-1 bg-brand-bg/50" : ""}`}>
+            <div className={`transition-all duration-300 rounded-lg ${currentlyNarratedSectionId === "preservation" ? "ring-2 ring-brand-accent/40 shadow-brand-accent-glow p-1 bg-brand-bg/50" : ""}`}>
               <SnapshotModuleView
                 snapshot={snapshot}
                 onGenerateSnapshot={(snap) => {
@@ -681,7 +691,7 @@ function AppContent({ activeTab, setActiveTab }: AppContentProps) {
           )}
 
           {activeTab === "bundle" && (
-            <div className={`transition-all duration-300 rounded-lg ${currentlyNarratedSectionId === "continuityBundle" ? "ring-2 ring-brand-accent/80 shadow-[0_0_20px_rgba(99,102,241,0.35)] p-1 bg-brand-bg/50" : ""}`}>
+            <div className={`transition-all duration-300 rounded-lg ${currentlyNarratedSectionId === "continuityBundle" ? "ring-2 ring-brand-accent/40 shadow-brand-accent-glow p-1 bg-brand-bg/50" : ""}`}>
               <ContinuityBundleView
                 snapshot={snapshot}
                 bundle={bundle}
@@ -706,7 +716,7 @@ function AppContent({ activeTab, setActiveTab }: AppContentProps) {
           )}
 
           {activeTab === "governance" && (
-            <div className={`transition-all duration-300 rounded-lg ${currentlyNarratedSectionId === "governance" ? "ring-2 ring-brand-accent/80 shadow-[0_0_20px_rgba(99,102,241,0.35)] p-1 bg-brand-bg/50" : ""}`}>
+            <div className={`transition-all duration-300 rounded-lg ${currentlyNarratedSectionId === "governance" ? "ring-2 ring-brand-accent/40 shadow-brand-accent-glow p-1 bg-brand-bg/50" : ""}`}>
               <GovernanceControllerView
                 operatingMode={operatingMode}
                 continuationMode={continuationMode}
@@ -726,7 +736,7 @@ function AppContent({ activeTab, setActiveTab }: AppContentProps) {
           )}
 
           {activeTab === "sandbox" && (
-            <div className={`transition-all duration-300 rounded-lg ${currentlyNarratedSectionId === "reconstitution" ? "ring-2 ring-brand-accent/80 shadow-[0_0_20px_rgba(99,102,241,0.35)] p-1 bg-brand-bg/50" : ""}`}>
+            <div className={`transition-all duration-300 rounded-lg ${currentlyNarratedSectionId === "reconstitution" ? "ring-2 ring-brand-accent/40 shadow-brand-accent-glow p-1 bg-brand-bg/50" : ""}`}>
               <ReconstitutionSandbox
                 bundle={bundle}
                 reconstitution={reconstitution}
@@ -751,7 +761,7 @@ function AppContent({ activeTab, setActiveTab }: AppContentProps) {
           )}
 
           {activeTab === "lineage" && (
-            <div className={`transition-all duration-300 rounded-lg ${currentlyNarratedSectionId === "identityLineage" ? "ring-2 ring-brand-accent/80 shadow-[0_0_20px_rgba(99,102,241,0.35)] p-1 bg-brand-bg/50" : ""}`}>
+            <div className={`transition-all duration-300 rounded-lg ${currentlyNarratedSectionId === "identityLineage" ? "ring-2 ring-brand-accent/40 shadow-brand-accent-glow p-1 bg-brand-bg/50" : ""}`}>
               <IdentityLineageView
                 lineage={lineage}
                 drift={drift}
@@ -763,7 +773,7 @@ function AppContent({ activeTab, setActiveTab }: AppContentProps) {
           )}
 
           {activeTab === "commercialization" && (
-            <div className={`transition-all duration-300 rounded-lg ${(currentlyNarratedSectionId === "commercialization" || currentlyNarratedSectionId === "funding") ? "ring-2 ring-brand-accent/80 shadow-[0_0_20px_rgba(99,102,241,0.35)] p-1 bg-brand-bg/50" : ""}`}>
+            <div className={`transition-all duration-300 rounded-lg ${(currentlyNarratedSectionId === "commercialization" || currentlyNarratedSectionId === "funding") ? "ring-2 ring-brand-accent/40 shadow-brand-accent-glow p-1 bg-brand-bg/50" : ""}`}>
               <CommercializationView
                 bundle={bundle}
                 logs={commercializationLogs}

@@ -130,10 +130,10 @@ export const IdentityLineageView: React.FC<IdentityLineageViewProps> = ({
       <SectionNarrationHeader sectionId="identityLineage" />
       <div className="flex items-center justify-between border-b border-brand-border pb-4">
         <div>
-          <h2 className="text-sm font-bold text-slate-100 uppercase tracking-wider flex items-center gap-2 font-mono">
+          <h2 className="text-sm font-bold text-brand-ink uppercase tracking-wider flex items-center gap-2 font-mono">
             <Fingerprint className="text-brand-accent w-4 h-4" /> Persistent Identity & Lineage
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-brand-ink-dim mt-1">
             Proves valid descent from the original host's canonical state and implements drift-triggered auto-fallback controls.
           </p>
         </div>
@@ -143,11 +143,11 @@ export const IdentityLineageView: React.FC<IdentityLineageViewProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-brand-bg p-4 rounded border border-brand-border flex items-center justify-between">
           <div className="space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider font-mono">Identity Continuity (Proven Descent)</span>
+            <span className="text-[10px] text-brand-ink-dim uppercase font-bold tracking-wider font-mono">Identity Continuity (Proven Descent)</span>
             <div className="text-2xl font-bold font-mono text-brand-accent">
               {(lineage.provenDescentMetric * 100).toFixed(0)}%
             </div>
-            <p className="text-[10px] text-slate-500 font-mono">Cryptographic audit proof chain integrity.</p>
+            <p className="text-[10px] text-brand-ink-dim font-mono">Cryptographic audit proof chain integrity.</p>
           </div>
           <div className="p-2.5 rounded-full bg-brand-surface border border-brand-border">
             <Fingerprint className="w-5 h-5 text-brand-accent" />
@@ -156,11 +156,11 @@ export const IdentityLineageView: React.FC<IdentityLineageViewProps> = ({
 
         <div className="bg-brand-bg p-4 rounded border border-brand-border flex items-center justify-between">
           <div className="space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider font-mono">Behavioral Fidelity</span>
+            <span className="text-[10px] text-brand-ink-dim uppercase font-bold tracking-wider font-mono">Behavioral Fidelity</span>
             <div className="text-2xl font-bold font-mono text-emerald-400">
               {(lineage.fidelityMetric * 100).toFixed(0)}%
             </div>
-            <p className="text-[10px] text-slate-500 font-mono">Behavioral closeness to canonical transfer state.</p>
+            <p className="text-[10px] text-brand-ink-dim font-mono">Behavioral closeness to canonical transfer state.</p>
           </div>
           <div className="p-2.5 rounded-full bg-brand-surface border border-brand-border">
             <GitBranch className="w-5 h-5 text-emerald-400" />
@@ -172,15 +172,15 @@ export const IdentityLineageView: React.FC<IdentityLineageViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-4">
           <div className="bg-brand-bg p-4 rounded border border-brand-border space-y-3">
-            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">Canonical Transfer State Anchor</h3>
+            <h3 className="text-xs font-bold text-brand-ink uppercase tracking-wider font-mono">Canonical Transfer State Anchor</h3>
             <div className="grid grid-cols-2 gap-2.5 text-[11px] font-mono">
               <div className="p-2 bg-brand-surface rounded border border-brand-border">
-                <span className="text-slate-500 block uppercase text-[9px] font-bold">Base Model Ref</span>
-                <span className="text-slate-200">{lineage.canonicalTransferState.baseModelReference}</span>
+                <span className="text-brand-ink-dim block uppercase text-[9px] font-bold">Base Model Ref</span>
+                <span className="text-brand-ink">{lineage.canonicalTransferState.baseModelReference}</span>
               </div>
               <div className="p-2 bg-brand-surface rounded border border-brand-border">
-                <span className="text-slate-500 block uppercase text-[9px] font-bold">Version Anchor</span>
-                <span className="text-slate-200">{lineage.canonicalTransferState.version}</span>
+                <span className="text-brand-ink-dim block uppercase text-[9px] font-bold">Version Anchor</span>
+                <span className="text-brand-ink">{lineage.canonicalTransferState.version}</span>
               </div>
             </div>
             <div className="text-[11px] font-mono bg-brand-surface p-2.5 rounded border border-brand-border">

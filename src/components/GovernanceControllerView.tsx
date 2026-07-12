@@ -35,7 +35,7 @@ export const GovernanceControllerView: React.FC<GovernanceControllerViewProps> =
       mode: OperatingMode.ARCHIVAL,
       short: "ARCHIVAL",
       desc: "Bundle is kept safely cold-stored in escrow. The AI instance is completely spun down. No operational queries are served.",
-      badgeColor: "bg-zinc-800 text-zinc-300 border-zinc-700",
+      badgeColor: "bg-brand-bg text-brand-ink border-brand-border",
       rules: ["API Tools: OFFLINE", "Spending Cap: $0.00", "Autonomy: NONE"],
     },
     {
