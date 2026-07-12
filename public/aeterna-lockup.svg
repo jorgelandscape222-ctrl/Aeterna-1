@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 130" fill="none" font-family="Inter, ui-sans-serif, system-ui, sans-serif">
+  <defs>
+    <linearGradient id="aeternaAccent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#818CF8"/>
+      <stop offset="100%" stop-color="#6366F1"/>
+    </linearGradient>
+  </defs>
+  <!-- mark -->
+  <g transform="translate(8,7) scale(0.95)">
+    <path d="M60 8 L105 34 L105 86 L60 112 L15 86 L15 34 Z" stroke="url(#aeternaAccent)" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M44 86 L60 40 L76 86" stroke="url(#aeternaAccent)" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M52 68 L68 68" stroke="url(#aeternaAccent)" stroke-width="8.5" stroke-linecap="round"/>
+    <circle cx="60" cy="98" r="4.5" fill="#818CF8"/>
+  </g>
+  <!-- wordmark -->
+  <text x="140" y="66" fill="#FFFFFF" font-size="46" font-weight="800" letter-spacing="5">AETERNA</text>
+  <text x="142" y="94" fill="#818CF8" font-size="12.5" font-weight="600" letter-spacing="5.5">AI  CONTINUITY  PROTOCOL</text>
+</svg>

@@ -472,7 +472,7 @@ function AppContent({ activeTab, setActiveTab }: AppContentProps) {
       <header className="border-b border-brand-border bg-brand-surface-alt flex flex-col gap-3 px-3 py-3 sm:px-6 sm:py-3.5 shrink-0 sticky top-0 z-40 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center justify-between gap-4 sm:justify-start">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-8 h-8 bg-brand-accent rounded flex items-center justify-center font-bold text-white italic shrink-0">P</div>
+            <img src="/aeterna-mark.svg" alt="Aeterna" className="w-8 h-8 shrink-0" />
             <div className="min-w-0">
               <h1 className="text-xs sm:text-sm font-bold tracking-tight text-white flex items-center gap-2 truncate">
                 <span className="truncate">AI CONTINUITY PROTOCOL</span> <span className="text-brand-accent font-mono text-xs shrink-0">v17.4</span>
@@ -808,13 +808,16 @@ function AppContent({ activeTab, setActiveTab }: AppContentProps) {
       <AeternaAssistant />
 
       {/* Aesthetic humbler footer */}
-      <footer className="bg-brand-surface-alt border-t border-brand-border py-5 px-6 mt-12 shrink-0">
-        <div className="flex flex-col md:flex-row items-center justify-between text-[11px] text-slate-500 gap-4">
-          <p className="uppercase tracking-wider font-mono">
-            REFERENCE SIMULATOR // AI CONTINUITY PROTOCOL SPECIFICATION // TECHNICAL EVALUATION ONLY
-          </p>
-          <div className="flex gap-4 font-mono">
-            <span className="text-brand-accent">STATE: S0-S11 COMPLIANT</span>
+      <footer className="bg-brand-surface-alt border-t border-brand-border py-6 px-6 mt-12 shrink-0">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col gap-2">
+            <img src="/aeterna-lockup.svg" alt="Aeterna — AI Continuity Protocol" className="w-[150px] opacity-40 hover:opacity-60 transition-opacity" />
+            <p className="uppercase tracking-wider font-mono text-[10px] text-brand-ink-dim">
+              REFERENCE SIMULATOR // AI CONTINUITY PROTOCOL SPECIFICATION // TECHNICAL EVALUATION ONLY
+            </p>
+          </div>
+          <div className="flex gap-4 font-mono text-[11px] text-brand-ink-dim">
+            <span className="text-brand-accent font-semibold">STATE: S0-S11 COMPLIANT</span>
             <span>PLUGGABLE LEDGER INTEGRATION</span>
           </div>
         </div>
