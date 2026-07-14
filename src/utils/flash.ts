@@ -4,5 +4,5 @@ export function flashElement(id: string) {
   el.scrollIntoView({ behavior: "smooth", block: "center" });
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   el.classList.add("guard-flash");
-  window.setTimeout(() => el.classList.remove("guard-flash"), 1800);
+  window.setTimeout(() => el.classList.remove("guard-flash"), 3000);
 }
