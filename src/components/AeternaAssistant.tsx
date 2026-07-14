@@ -20,8 +20,12 @@ interface Message {
 
 const GREETING_TEXT = "Hi! I'm here to answer questions about the Aeterna continuity protocol — how it detects trouble, preserves an AI agent, keeps its identity intact, and safely restores it. Ask me anything, or type 'give me an overview' to start.";
 
-export const AeternaAssistant: React.FC = () => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+interface AeternaAssistantProps {
+  defaultOpen?: boolean;
+}
+
+export const AeternaAssistant: React.FC<AeternaAssistantProps> = ({ defaultOpen }) => {
+  const [isOpen, setIsOpen] = useState<boolean>(defaultOpen ?? false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "greeting",

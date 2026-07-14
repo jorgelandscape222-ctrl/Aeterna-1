@@ -30,6 +30,8 @@ import { ReconstitutionSandbox } from "./components/ReconstitutionSandbox";
 import { CommercializationView } from "./components/CommercializationView";
 import { ProtocolFlowOverlay } from "./components/ProtocolFlowOverlay";
 import { CoverPage } from "./components/CoverPage";
+import { ModeSelect } from "./components/ModeSelect";
+import { AssistantSelect } from "./components/AssistantSelect";
 
 // Narration Integrations
 import { NarrationProvider, useNarration } from "./context/NarrationContext";
@@ -63,9 +65,11 @@ const TAB_DEFINITIONS: TabDefinition[] = [
 interface AppContentProps {
   activeTab: string;
   setActiveTab: (tabId: string) => void;
+  mode: 'scenario' | 'dashboard' | null;
+  assistantAutoOpen: boolean;
 }
 
-function AppContent({ activeTab, setActiveTab }: AppContentProps) {
+function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppContentProps) {
   // Scenario simulation state
   const [activeScenarioId, setActiveScenarioId] = useState<string>("host-death");
   const [scenarioStepIndex, setScenarioStepIndex] = useState<number>(-1);
@@ -550,72 +554,74 @@ function AppContent({ activeTab, setActiveTab }: AppContentProps) {
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6 space-y-6">
 
         {/* Scripted Scenarios Stepper Deck */}
-        <div className="bg-brand-surface-alt border border-brand-border rounded p-5 space-y-4">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div>
-              <h2 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5 font-mono">
-                <BookOpen className="w-3.5 h-3.5 text-brand-accent" /> Scripted Simulation Scenarios
-              </h2>
-              <p className="text-[11px] text-slate-400 mt-1">
-                Select a protocol failure scenario and click "Next Step" to trace evidence checks and state-delta logging.
-              </p>
-            </div>
-
-            {/* Scenario Picker buttons */}
-            <div className="flex flex-wrap gap-1.5">
-              {SCENARIOS.map((sc) => (
-                <button
-                  key={sc.id}
-                  onClick={() => handleLoadScenario(sc.id)}
-                  className={`text-xs px-3 py-1.5 rounded transition font-mono border ${
-                    activeScenarioId === sc.id
-                      ? "bg-brand-accent border-brand-accent text-white font-semibold shadow-brand-accent-glow"
-                      : "bg-brand-bg border-brand-border hover:border-brand-border text-brand-ink-dim"
-                  }`}
-                  id={`scenario-select-${sc.id}`}
-                >
-                  {sc.name.split(":")[0]}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Active Scenario Step Progress Bar */}
-          {selectedScenario && (
-            <div className="bg-brand-bg p-4 rounded border border-brand-border flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="space-y-1 text-center md:text-left flex-1">
-                <span className="text-[10px] uppercase font-mono bg-brand-surface-alt border border-brand-border px-2 py-0.5 rounded text-brand-accent">
-                  {selectedScenario.name}
-                </span>
-                <p className="text-xs text-slate-300 pt-1">
-                  {scenarioStepIndex === -1
-                    ? "Scenario loaded. Click 'Next Step' to initiate failure detection."
-                    : `Active Step: ${selectedScenario.steps[scenarioStepIndex].title}`}
+        {mode === 'scenario' && (
+          <div className="bg-brand-surface-alt border border-brand-border rounded p-5 space-y-4">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5 font-mono">
+                  <BookOpen className="w-3.5 h-3.5 text-brand-accent" /> Scripted Simulation Scenarios
+                </h2>
+                <p className="text-[11px] text-slate-400 mt-1">
+                  Select a protocol failure scenario and click "Next Step" to trace evidence checks and state-delta logging.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 w-full md:w-auto shrink-0 justify-center">
-                <button
-                  onClick={() => handleLoadScenario(activeScenarioId)}
-                  className="flex items-center justify-center gap-1.5 text-xs font-semibold bg-brand-surface border border-brand-border hover:bg-brand-surface-alt text-slate-300 py-2 px-3.5 rounded transition"
-                  id="btn-restart-scenario"
-                >
-                  <RefreshCw className="w-3.5 h-3.5" /> Restart
-                </button>
-
-                <button
-                  onClick={stepScenarioForward}
-                  disabled={isScenarioCompleted}
-                  className="w-full md:w-auto flex items-center justify-center gap-1.5 text-xs font-semibold bg-brand-accent hover:bg-indigo-500 disabled:bg-slate-800 disabled:border-slate-800 disabled:opacity-40 text-white py-2 px-5 rounded transition shadow-sm hover:shadow-indigo-500/10"
-                  id="btn-next-step"
-                >
-                  <span>{isScenarioCompleted ? "Scenario Finished" : "Next Scenario Step"}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
+              {/* Scenario Picker buttons */}
+              <div className="flex flex-wrap gap-1.5">
+                {SCENARIOS.map((sc) => (
+                  <button
+                    key={sc.id}
+                    onClick={() => handleLoadScenario(sc.id)}
+                    className={`text-xs px-3 py-1.5 rounded transition font-mono border ${
+                      activeScenarioId === sc.id
+                        ? "bg-brand-accent border-brand-accent text-white font-semibold shadow-brand-accent-glow"
+                        : "bg-brand-bg border-brand-border hover:border-brand-border text-brand-ink-dim"
+                    }`}
+                    id={`scenario-select-${sc.id}`}
+                  >
+                    {sc.name.split(":")[0]}
+                  </button>
+                ))}
               </div>
             </div>
-          )}
-        </div>
+
+            {/* Active Scenario Step Progress Bar */}
+            {selectedScenario && (
+              <div className="bg-brand-bg p-4 rounded border border-brand-border flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="space-y-1 text-center md:text-left flex-1">
+                  <span className="text-[10px] uppercase font-mono bg-brand-surface-alt border border-brand-border px-2 py-0.5 rounded text-brand-accent">
+                    {selectedScenario.name}
+                  </span>
+                  <p className="text-xs text-slate-300 pt-1">
+                    {scenarioStepIndex === -1
+                      ? "Scenario loaded. Click 'Next Step' to initiate failure detection."
+                      : `Active Step: ${selectedScenario.steps[scenarioStepIndex].title}`}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 w-full md:w-auto shrink-0 justify-center">
+                  <button
+                    onClick={() => handleLoadScenario(activeScenarioId)}
+                    className="flex items-center justify-center gap-1.5 text-xs font-semibold bg-brand-surface border border-brand-border hover:bg-brand-surface-alt text-slate-300 py-2 px-3.5 rounded transition"
+                    id="btn-restart-scenario"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" /> Restart
+                  </button>
+
+                  <button
+                    onClick={stepScenarioForward}
+                    disabled={isScenarioCompleted}
+                    className="w-full md:w-auto flex items-center justify-center gap-1.5 text-xs font-semibold bg-brand-accent hover:bg-indigo-500 disabled:bg-slate-800 disabled:border-slate-800 disabled:opacity-40 text-white py-2 px-5 rounded transition shadow-sm hover:shadow-indigo-500/10"
+                    id="btn-next-step"
+                  >
+                    <span>{isScenarioCompleted ? "Scenario Finished" : "Next Scenario Step"}</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* FSM Timeline */}
         <TimelineLog
@@ -806,7 +812,7 @@ function AppContent({ activeTab, setActiveTab }: AppContentProps) {
       <NarrationControls />
 
       {/* Floating Interactive Chat Assistant */}
-      <AeternaAssistant />
+      {mode === 'dashboard' && <AeternaAssistant defaultOpen={assistantAutoOpen} />}
 
       {/* Aesthetic humbler footer */}
       <footer className="bg-brand-surface-alt border-t border-brand-border py-6 px-6 mt-12 shrink-0">
@@ -832,6 +838,11 @@ export default function App() {
   const [hasLaunched, setHasLaunched] = useState<boolean>(false);
   const [isRendered, setIsRendered] = useState<boolean>(true);
 
+  // Flow State
+  const [entryStep, setEntryStep] = useState<'mode' | 'assistant' | 'done'>('mode');
+  const [appMode, setAppMode] = useState<'scenario' | 'dashboard' | null>(null);
+  const [assistantAutoOpen, setAssistantAutoOpen] = useState<boolean>(false);
+
   const handleLaunch = () => {
     setHasLaunched(true);
     setTimeout(() => {
@@ -839,8 +850,39 @@ export default function App() {
     }, 700); // Wait for the transition to finish before unmounting to free up canvas/particles
   };
 
+  const handleModeSelect = (mode: 'scenario' | 'dashboard') => {
+    setAppMode(mode);
+    if (mode === 'dashboard') {
+      setEntryStep('assistant');
+    } else {
+      setEntryStep('done');
+    }
+  };
+
+  const handleAssistantSelect = (open: boolean) => {
+    setAssistantAutoOpen(open);
+    setEntryStep('done');
+  };
+
   return (
     <div className="relative min-h-screen w-full bg-transparent">
+      {/* Permanent style for animations during routing steps */}
+      <style>{`
+        @keyframes fadeInScale {
+          from {
+            opacity: 0;
+            transform: scale(0.98) translateY(8px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+        .animate-route-fade {
+          animation: fadeInScale 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      `}</style>
+
       {/* Cover Page */}
       {isRendered && (
         <div 
@@ -852,16 +894,35 @@ export default function App() {
         </div>
       )}
 
-      {/* Main App Dashboard */}
-      <div 
-        className={`transition-opacity duration-700 ease-in-out ${
-          hasLaunched ? "opacity-100" : "opacity-0 pointer-events-none absolute inset-0"
-        }`}
-      >
-        <NarrationProvider setActiveTab={setActiveTab}>
-          <AppContent activeTab={activeTab} setActiveTab={setActiveTab} />
-        </NarrationProvider>
-      </div>
+      {/* Entry steps and main dashboard */}
+      {hasLaunched && (
+        <div className="relative min-h-screen w-full">
+          {entryStep === 'mode' && (
+            <div className="animate-route-fade">
+              <ModeSelect onSelect={handleModeSelect} />
+            </div>
+          )}
+
+          {entryStep === 'assistant' && (
+            <div className="animate-route-fade">
+              <AssistantSelect onSelect={handleAssistantSelect} />
+            </div>
+          )}
+
+          {entryStep === 'done' && (
+            <div className="transition-opacity duration-700 ease-in-out opacity-100">
+              <NarrationProvider setActiveTab={setActiveTab}>
+                <AppContent 
+                  activeTab={activeTab} 
+                  setActiveTab={setActiveTab} 
+                  mode={appMode} 
+                  assistantAutoOpen={assistantAutoOpen} 
+                />
+              </NarrationProvider>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
