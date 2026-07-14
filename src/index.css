@@ -83,3 +83,14 @@ body {
 @utility shadow-brand-accent-glow {
   box-shadow: 0 0 15px var(--color-brand-accent-glow);
 }
+
+@keyframes guardFlash {
+  0%,100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); }
+  25%,75% { box-shadow: 0 0 0 4px rgba(99,102,241,0.55); }
+  50%     { box-shadow: 0 0 0 8px rgba(99,102,241,0.25); }
+}
+
+.guard-flash {
+  animation: guardFlash 1.8s ease-in-out;
+  border-radius: 0.375rem;
+}

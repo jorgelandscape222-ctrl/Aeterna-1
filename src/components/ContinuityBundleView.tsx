@@ -3,17 +3,25 @@ import { ContinuityBundle, PreservationSnapshot } from "../types";
 import { sha256, calculateMerkleRoot } from "../utils/crypto";
 import { FolderGit2, Fingerprint, Gavel, HelpCircle, Key, Percent, CheckCircle, AlertTriangle, Coins } from "lucide-react";
 import { SectionNarrationHeader } from "./SectionNarrationHeader";
+import { GuidedPopover } from "./GuidedPopover";
+import { Requirement } from "../data/prerequisites";
 
 interface ContinuityBundleViewProps {
   snapshot: PreservationSnapshot | null;
   bundle: ContinuityBundle | null;
   onGenerateBundle: (bundle: ContinuityBundle) => void;
+  prerequisiteMet: boolean;
+  requirement: Requirement;
+  onRequirementRedirect: () => void;
 }
 
 export const ContinuityBundleView: React.FC<ContinuityBundleViewProps> = ({
   snapshot,
   bundle,
   onGenerateBundle,
+  prerequisiteMet,
+  requirement,
+  onRequirementRedirect,
 }) => {
   const [successorName, setSuccessorName] = useState("Sarah Jenkins (Designated Successor)");
   const [trusteeName, setTrusteeName] = useState("LexGuardian Digital Trust Corp");
@@ -23,6 +31,7 @@ export const ContinuityBundleView: React.FC<ContinuityBundleViewProps> = ({
   const [reserveSplit, setReserveSplit] = useState(10);
 
   const [activeTab, setActiveTab] = useState<number>(0);
+  const [showReq, setShowReq] = useState(false);
 
   const handleAssembleBundle = () => {
     if (!snapshot) return;
@@ -141,16 +150,7 @@ export const ContinuityBundleView: React.FC<ContinuityBundleViewProps> = ({
         </div>
       </div>
 
-      {!snapshot ? (
-        <div className="bg-brand-bg p-8 rounded border border-brand-border text-center flex flex-col items-center justify-center space-y-3">
-          <AlertTriangle className="w-10 h-10 text-amber-500 animate-pulse" />
-          <h3 className="text-sm font-semibold text-slate-300 font-mono uppercase tracking-wider">Preservation Snapshot Required First</h3>
-          <p className="text-xs text-slate-500 max-w-sm">
-            You must first generate a frozen snapshot in the Snapshot Module before the Continuity Bundle can be packaged.
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Packaging Form Parameters */}
           <div className="lg:col-span-5 space-y-4">
             <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">Seal Governance & Rights Manifest</h3>
@@ -237,13 +237,27 @@ export const ContinuityBundleView: React.FC<ContinuityBundleViewProps> = ({
               </div>
             </div>
 
-            <button
-              onClick={handleAssembleBundle}
-              className="w-full bg-brand-accent hover:bg-indigo-500 text-white font-semibold text-xs py-2.5 px-4 rounded transition flex items-center justify-center gap-2 shadow-sm hover:shadow-indigo-500/10"
-              id="btn-package-bundle"
+            <GuidedPopover
+              open={showReq}
+              onClose={() => setShowReq(false)}
+              requirement={requirement}
+              onCta={onRequirementRedirect}
             >
-              <CheckCircle className="w-4 h-4" /> Assemble & Cryptographically Sign Bundle
-            </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!prerequisiteMet) {
+                    setShowReq(true);
+                  } else {
+                    handleAssembleBundle();
+                  }
+                }}
+                className="w-full bg-brand-accent hover:bg-indigo-500 text-white font-semibold text-xs py-2.5 px-4 rounded transition flex items-center justify-center gap-2 shadow-sm hover:shadow-indigo-500/10"
+                id="btn-package-bundle"
+              >
+                <CheckCircle className="w-4 h-4" /> Assemble & Cryptographically Sign Bundle
+              </button>
+            </GuidedPopover>
           </div>
 
           {/* Bundle Explorer */}
@@ -328,7 +342,6 @@ export const ContinuityBundleView: React.FC<ContinuityBundleViewProps> = ({
             )}
           </div>
         </div>
-      )}
     </div>
   );
 };

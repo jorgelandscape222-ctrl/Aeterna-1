@@ -19,6 +19,9 @@ import {
 import { sha256 } from "./utils/crypto";
 import { SCENARIOS, Scenario, ScenarioStep } from "./data/scenarios";
 
+import { PREREQUISITES } from "./data/prerequisites";
+import { flashElement } from "./utils/flash";
+
 // Sub-components
 import { TimelineLog } from "./components/TimelineLog";
 import { TriggerEngineView } from "./components/TriggerEngineView";
@@ -499,7 +502,7 @@ function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppCon
           </div>
         </div>
 
-        <div className="flex items-center gap-3 sm:gap-6 overflow-x-auto scroll-thin">
+        <div className="flex flex-wrap items-center gap-3 sm:flex-nowrap sm:gap-6 sm:overflow-x-auto sm:scroll-thin">
           <div className="text-right hidden sm:block shrink-0">
             <p className="label-sm mb-0">System Status</p>
             <p className="mono text-emerald-400 uppercase">{currentState.split("_").slice(0, 2).join(" ")}</p>
@@ -512,7 +515,7 @@ function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppCon
             </p>
           </div>
           <div className="h-8 w-[1px] bg-brand-border hidden md:block shrink-0"></div>
-          <div className="flex items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
+          <div className="grid grid-cols-2 gap-2 w-full sm:flex sm:items-center sm:gap-2.5 sm:w-auto">
             {mode === 'dashboard' && (
               <button
                 onClick={() => setAssistantOpen(true)}
@@ -553,14 +556,14 @@ function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppCon
               <Download className="w-3.5 h-3.5 shrink-0" /> <span className="hidden xs:inline">Export .ZIP</span>
             </a>
 
-            <a
-              href="#sandbox"
+            <button
+              type="button"
               onClick={() => setActiveTab("sandbox")}
-              className="flex-1 sm:flex-none justify-center bg-brand-surface text-slate-200 border border-brand-border hover:bg-brand-surface-alt hover:border-brand-accent/50 transition-all duration-200 px-3 py-1.5 text-xs font-semibold rounded flex items-center gap-1.5 whitespace-nowrap"
+              className="flex-1 sm:flex-none justify-center bg-brand-surface text-slate-200 border border-brand-border hover:bg-brand-surface-alt hover:border-brand-accent/50 transition-all duration-200 px-3 py-1.5 text-xs font-semibold rounded flex items-center gap-1.5 whitespace-nowrap cursor-pointer"
               title="Sandbox View"
             >
               <Cpu className="w-3.5 h-3.5 text-brand-accent shrink-0" /> <span className="hidden xs:inline">Sandbox View</span>
-            </a>
+            </button>
           </div>
         </div>
       </header>
@@ -732,6 +735,12 @@ function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppCon
                       "Registry Anchor"
                     );
                   }, 1200);
+                }}
+                prerequisiteMet={snapshot !== null}
+                requirement={PREREQUISITES["generate-bundle"]}
+                onRequirementRedirect={() => {
+                  setActiveTab(PREREQUISITES["generate-bundle"].targetTab);
+                  setTimeout(() => flashElement("btn-generate-snapshot"), 150);
                 }}
               />
             </div>
