@@ -5,7 +5,6 @@ import {
   Send, 
   X, 
   Trash2, 
-  Bot, 
   Sparkles, 
   AlertCircle, 
   ArrowUpRight 
@@ -21,11 +20,11 @@ interface Message {
 const GREETING_TEXT = "Hi! I'm here to answer questions about the Aeterna continuity protocol — how it detects trouble, preserves an AI agent, keeps its identity intact, and safely restores it. Ask me anything, or type 'give me an overview' to start.";
 
 interface AeternaAssistantProps {
-  defaultOpen?: boolean;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export const AeternaAssistant: React.FC<AeternaAssistantProps> = ({ defaultOpen }) => {
-  const [isOpen, setIsOpen] = useState<boolean>(defaultOpen ?? false);
+export const AeternaAssistant: React.FC<AeternaAssistantProps> = ({ isOpen, onClose }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "greeting",
@@ -191,25 +190,7 @@ export const AeternaAssistant: React.FC<AeternaAssistantProps> = ({ defaultOpen 
 
   return (
     <>
-      {/* 1. Floating Launcher Button (Bottom Left, opposite Narration Controls to avoid clutter) */}
-      <div className="fixed bottom-4 left-4 z-50" id="floating-assistant-launcher">
-        <button
-          onClick={() => setIsOpen(true)}
-          className="flex items-center gap-2 bg-slate-900 border border-brand-accent/60 hover:border-brand-accent text-white px-3.5 py-2.5 rounded-full shadow-lg shadow-brand-accent/25 hover:shadow-brand-accent/40 transition-all duration-300 font-mono text-xs font-bold cursor-pointer hover:-translate-y-0.5 group"
-          title="Ask Aeterna Assistant"
-        >
-          <div className="relative">
-            <Bot className="w-4 h-4 text-brand-accent group-hover:scale-110 transition-transform duration-200" />
-            <span className="absolute -top-1 -right-1 flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-accent"></span>
-            </span>
-          </div>
-          <span className="hidden xs:inline uppercase tracking-wider">Ask Assistant</span>
-        </button>
-      </div>
-
-      {/* 2. Side Panel / Drawer */}
+      {/* Drawer */}
       <AnimatePresence>
         {isOpen && (
           <>
@@ -218,7 +199,7 @@ export const AeternaAssistant: React.FC<AeternaAssistantProps> = ({ defaultOpen 
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.5 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsOpen(false)}
+              onClick={onClose}
               className="fixed inset-0 bg-black z-50 md:hidden"
             />
 
@@ -259,7 +240,7 @@ export const AeternaAssistant: React.FC<AeternaAssistantProps> = ({ defaultOpen 
 
                   {/* Close button */}
                   <button
-                    onClick={() => setIsOpen(false)}
+                    onClick={onClose}
                     className="p-1.5 hover:bg-brand-surface-alt rounded text-brand-ink-dim hover:text-white transition cursor-pointer"
                     title="Close Panel"
                   >

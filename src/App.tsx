@@ -39,7 +39,7 @@ import { NarrationControls } from "./components/NarrationControls";
 import { AeternaAssistant } from "./components/AeternaAssistant";
 
 // Icons
-import { Play, Sparkles, RefreshCw, Layers, ShieldCheck, Cpu, Coins, GitFork, ArrowRight, BookOpen, AlertTriangle, Map, Download, LucideIcon } from "lucide-react";
+import { Play, Sparkles, RefreshCw, Layers, ShieldCheck, Cpu, Coins, GitFork, ArrowRight, BookOpen, AlertTriangle, Map, Download, Bot, LucideIcon } from "lucide-react";
 
 // Sub-system tab definitions, driving both the desktop (numbered, full-label)
 // and mobile (short-label) tab bar renders from a single source of truth.
@@ -76,6 +76,9 @@ function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppCon
 
   // Overlay state
   const [isFlowOverlayOpen, setIsFlowOverlayOpen] = useState<boolean>(false);
+
+  // Assistant open state
+  const [assistantOpen, setAssistantOpen] = useState<boolean>(assistantAutoOpen);
 
   // Narration state hook
   const { startTour, currentlyNarratedSectionId, onTabChangeExternal } = useNarration();
@@ -510,6 +513,18 @@ function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppCon
           </div>
           <div className="h-8 w-[1px] bg-brand-border hidden md:block shrink-0"></div>
           <div className="flex items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
+            {mode === 'dashboard' && (
+              <button
+                onClick={() => setAssistantOpen(true)}
+                className="flex-1 sm:flex-none justify-center bg-brand-surface border border-brand-accent/40 hover:border-brand-accent text-slate-200 transition-all duration-200 px-3 py-1.5 text-xs font-semibold rounded flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+                id="btn-launch-assistant-header"
+                title="Launch Chat Bot Assistant"
+              >
+                <Bot className="w-3.5 h-3.5 text-brand-accent shrink-0" />
+                <span className="hidden xs:inline">Launch Assistant</span>
+              </button>
+            )}
+
             <button
               onClick={() => setIsFlowOverlayOpen(true)}
               className="flex-1 sm:flex-none justify-center bg-brand-accent hover:bg-indigo-500 text-white transition-all duration-200 px-3 sm:px-3.5 py-1.5 text-xs font-bold rounded flex items-center gap-1.5 cursor-pointer shadow-sm shadow-brand-accent/25 whitespace-nowrap"
@@ -812,7 +827,9 @@ function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppCon
       <NarrationControls />
 
       {/* Floating Interactive Chat Assistant */}
-      {mode === 'dashboard' && <AeternaAssistant defaultOpen={assistantAutoOpen} />}
+      {mode === 'dashboard' && (
+        <AeternaAssistant isOpen={assistantOpen} onClose={() => setAssistantOpen(false)} />
+      )}
 
       {/* Aesthetic humbler footer */}
       <footer className="bg-brand-surface-alt border-t border-brand-border py-6 px-6 mt-12 shrink-0">
