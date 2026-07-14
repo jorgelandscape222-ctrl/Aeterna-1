@@ -3,16 +3,25 @@ import { PreservationSnapshot } from "../types";
 import { sha256 } from "../utils/crypto";
 import { ShieldCheck, Database, Zap, Sparkles, Check, Download } from "lucide-react";
 import { SectionNarrationHeader } from "./SectionNarrationHeader";
+import { GuidedPopover } from "./GuidedPopover";
+import { Requirement } from "../data/prerequisites";
 
 interface SnapshotModuleViewProps {
   snapshot: PreservationSnapshot | null;
   onGenerateSnapshot: (snapshot: PreservationSnapshot) => void;
+  prerequisiteMet: boolean;
+  requirement: Requirement;
+  onRequirementRedirect: () => void;
 }
 
 export const SnapshotModuleView: React.FC<SnapshotModuleViewProps> = ({
   snapshot,
   onGenerateSnapshot,
+  prerequisiteMet,
+  requirement,
+  onRequirementRedirect,
 }) => {
+  const [showReq, setShowReq] = useState(false);
   // Input states for generating snapshot
   const [modelName, setModelName] = useState("gemini-2.5-pro");
   const [systemPrompt, setSystemPrompt] = useState(
@@ -211,13 +220,27 @@ export const SnapshotModuleView: React.FC<SnapshotModuleViewProps> = ({
             </div>
           </div>
 
-          <button
-            onClick={handleCreateSnapshot}
-            className="w-full bg-brand-accent hover:bg-indigo-500 text-white font-semibold text-xs py-2.5 px-4 rounded transition flex items-center justify-center gap-2 shadow-sm hover:shadow-indigo-500/10"
-            id="btn-generate-snapshot"
+          <GuidedPopover
+            open={showReq}
+            onClose={() => setShowReq(false)}
+            requirement={requirement}
+            onCta={onRequirementRedirect}
           >
-            <Sparkles className="w-3.5 h-3.5" /> Freeze State & Generate Snapshot
-          </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (!prerequisiteMet) {
+                  setShowReq(true);
+                } else {
+                  handleCreateSnapshot();
+                }
+              }}
+              className="w-full bg-brand-accent hover:bg-indigo-500 text-white font-semibold text-xs py-2.5 px-4 rounded transition flex items-center justify-center gap-2 shadow-sm hover:shadow-indigo-500/10 cursor-pointer"
+              id="btn-generate-snapshot"
+            >
+              <Sparkles className="w-3.5 h-3.5" /> Freeze State & Generate Snapshot
+            </button>
+          </GuidedPopover>
         </div>
 
         {/* JSON Output View */}

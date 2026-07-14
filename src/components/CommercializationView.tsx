@@ -2,24 +2,33 @@ import React, { useState } from "react";
 import { ContinuityBundle, CommercializationLog } from "../types";
 import { Coins, CheckCircle, AlertTriangle, Play, HelpCircle, DollarSign, ArrowRight } from "lucide-react";
 import { SectionNarrationHeader } from "./SectionNarrationHeader";
+import { GuidedPopover } from "./GuidedPopover";
+import { Requirement } from "../data/prerequisites";
 
 interface CommercializationViewProps {
   bundle: ContinuityBundle | null;
   logs: CommercializationLog[];
   onAddLog: (log: CommercializationLog) => void;
+  prerequisiteMet: boolean;
+  requirement: Requirement;
+  onRequirementRedirect: () => void;
 }
 
 export const CommercializationView: React.FC<CommercializationViewProps> = ({
   bundle,
   logs,
   onAddLog,
+  prerequisiteMet,
+  requirement,
+  onRequirementRedirect,
 }) => {
+  const [showReq, setShowReq] = useState(false);
   const [simulatedRevenue, setSimulatedRevenue] = useState(250);
   const [selectedClient, setSelectedClient] = useState("Acme Corp Research Lab");
   const [selectedTxType, setSelectedTxType] = useState("REST API Call Licensing");
 
-  const handleSimulateTransaction = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSimulateTransaction = (e?: React.FormEvent | React.MouseEvent) => {
+    if (e) e.preventDefault();
     if (!bundle) return;
 
     // Split percentages from bundle governance manifest
@@ -122,7 +131,7 @@ export const CommercializationView: React.FC<CommercializationViewProps> = ({
           </div>
 
           {/* Simulate revenue form */}
-          {isEligible && (
+          {(isEligible || !prerequisiteMet) && (
             <form onSubmit={handleSimulateTransaction} className="bg-brand-bg p-4 rounded border border-brand-border space-y-3">
               <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">Simulate Revenue Influx</h4>
               
@@ -160,13 +169,27 @@ export const CommercializationView: React.FC<CommercializationViewProps> = ({
                 </div>
               </div>
 
-              <button
-                type="submit"
-                className="w-full bg-brand-accent hover:bg-indigo-500 text-white font-semibold text-xs py-2.5 px-4 rounded transition flex items-center justify-center gap-1.5 font-mono uppercase tracking-wider shadow-sm"
-                id="btn-simulate-royalty"
+              <GuidedPopover
+                open={showReq}
+                onClose={() => setShowReq(false)}
+                requirement={requirement}
+                onCta={onRequirementRedirect}
               >
-                <Play className="w-3.5 h-3.5" /> Execute Royalty Payout Split
-              </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    if (!prerequisiteMet) {
+                      setShowReq(true);
+                    } else {
+                      handleSimulateTransaction(e);
+                    }
+                  }}
+                  className="w-full bg-brand-accent hover:bg-indigo-500 text-white font-semibold text-xs py-2.5 px-4 rounded transition flex items-center justify-center gap-1.5 font-mono uppercase tracking-wider shadow-sm cursor-pointer"
+                  id="btn-simulate-royalty"
+                >
+                  <Play className="w-3.5 h-3.5" /> Execute Royalty Payout Split
+                </button>
+              </GuidedPopover>
             </form>
           )}
         </div>

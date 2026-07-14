@@ -19,7 +19,7 @@ import {
 import { sha256 } from "./utils/crypto";
 import { SCENARIOS, Scenario, ScenarioStep } from "./data/scenarios";
 
-import { PREREQUISITES } from "./data/prerequisites";
+import { PREREQUISITES, Requirement } from "./data/prerequisites";
 import { flashElement } from "./utils/flash";
 
 // Sub-components
@@ -85,6 +85,11 @@ function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppCon
 
   // Narration state hook
   const { startTour, currentlyNarratedSectionId, onTabChangeExternal } = useNarration();
+
+  const redirectToRequirement = (req: Requirement) => {
+    setActiveTab(req.targetTab);
+    setTimeout(() => flashElement(req.targetElementId), 150);
+  };
 
   // Autoplay on first-visit welcome/tour sequence
   useEffect(() => {
@@ -711,6 +716,9 @@ function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppCon
                     );
                   }
                 }}
+                prerequisiteMet={triggerStatus.evidenceItems.length > 0}
+                requirement={PREREQUISITES["generate-snapshot"]}
+                onRequirementRedirect={() => redirectToRequirement(PREREQUISITES["generate-snapshot"])}
               />
             </div>
           )}
@@ -738,10 +746,7 @@ function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppCon
                 }}
                 prerequisiteMet={snapshot !== null}
                 requirement={PREREQUISITES["generate-bundle"]}
-                onRequirementRedirect={() => {
-                  setActiveTab(PREREQUISITES["generate-bundle"].targetTab);
-                  setTimeout(() => flashElement("btn-generate-snapshot"), 150);
-                }}
+                onRequirementRedirect={() => redirectToRequirement(PREREQUISITES["generate-bundle"])}
               />
             </div>
           )}
@@ -816,6 +821,9 @@ function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppCon
                     log.id
                   );
                 }}
+                prerequisiteMet={bundle !== null}
+                requirement={PREREQUISITES["simulate-commercialization"]}
+                onRequirementRedirect={() => redirectToRequirement(PREREQUISITES["simulate-commercialization"])}
               />
             </div>
           )}

@@ -289,7 +289,7 @@ export const TriggerEngineView: React.FC<TriggerEngineViewProps> = ({
               <button
                 onClick={handleSendPing}
                 className="flex-1 md:flex-none flex items-center justify-center gap-1.5 bg-brand-accent text-white text-xs py-2 px-3.5 rounded font-semibold hover:bg-indigo-500 transition shadow-sm hover:shadow-indigo-500/10"
-                id="btn-send-ping"
+                id="btn-satisfy-trigger"
               >
                 <Send className="w-3.5 h-3.5" /> Send Reachability Challenge
               </button>
@@ -298,7 +298,7 @@ export const TriggerEngineView: React.FC<TriggerEngineViewProps> = ({
                 <button
                   onClick={simulateNoResponse}
                   className="flex-1 md:flex-none flex items-center justify-center gap-1.5 bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-900/50 text-xs py-2 px-3 rounded font-semibold transition"
-                  id="btn-simulate-expiry"
+                  id="btn-satisfy-trigger"
                 >
                   Simulate Expiry (No Answer)
                 </button>
