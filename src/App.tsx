@@ -29,6 +29,7 @@ import { GovernanceControllerView } from "./components/GovernanceControllerView"
 import { ReconstitutionSandbox } from "./components/ReconstitutionSandbox";
 import { CommercializationView } from "./components/CommercializationView";
 import { ProtocolFlowOverlay } from "./components/ProtocolFlowOverlay";
+import { CoverPage } from "./components/CoverPage";
 
 // Narration Integrations
 import { NarrationProvider, useNarration } from "./context/NarrationContext";
@@ -828,10 +829,39 @@ function AppContent({ activeTab, setActiveTab }: AppContentProps) {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>("trigger");
+  const [hasLaunched, setHasLaunched] = useState<boolean>(false);
+  const [isRendered, setIsRendered] = useState<boolean>(true);
+
+  const handleLaunch = () => {
+    setHasLaunched(true);
+    setTimeout(() => {
+      setIsRendered(false);
+    }, 700); // Wait for the transition to finish before unmounting to free up canvas/particles
+  };
 
   return (
-    <NarrationProvider setActiveTab={setActiveTab}>
-      <AppContent activeTab={activeTab} setActiveTab={setActiveTab} />
-    </NarrationProvider>
+    <div className="relative min-h-screen w-full bg-[#0F1115]">
+      {/* Cover Page */}
+      {isRendered && (
+        <div 
+          className={`transition-opacity duration-700 ease-in-out ${
+            hasLaunched ? "opacity-0 pointer-events-none absolute inset-0 z-0" : "opacity-100 z-50 relative"
+          }`}
+        >
+          <CoverPage onLaunch={handleLaunch} />
+        </div>
+      )}
+
+      {/* Main App Dashboard */}
+      <div 
+        className={`transition-opacity duration-700 ease-in-out ${
+          hasLaunched ? "opacity-100" : "opacity-0 pointer-events-none absolute inset-0"
+        }`}
+      >
+        <NarrationProvider setActiveTab={setActiveTab}>
+          <AppContent activeTab={activeTab} setActiveTab={setActiveTab} />
+        </NarrationProvider>
+      </div>
+    </div>
   );
 }
