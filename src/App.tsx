@@ -840,7 +840,7 @@ export default function App() {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-[#0F1115]">
+    <div className="relative min-h-screen w-full bg-transparent">
       {/* Cover Page */}
       {isRendered && (
         <div 

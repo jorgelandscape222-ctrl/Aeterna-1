@@ -1,10 +1,12 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface CoverPageProps {
   onLaunch: () => void;
 }
 
 interface Particle {
+  baseX: number;
+  baseY: number;
   x: number;
   y: number;
   vx: number;
@@ -14,6 +16,54 @@ interface Particle {
 
 export const CoverPage: React.FC<CoverPageProps> = ({ onLaunch }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [displayText, setDisplayText] = useState("");
+  const [launching, setLaunching] = useState(false);
+  const launchTimeoutRef = useRef<any>(null);
+
+  const targetText = "AETERNA PROTOCOL";
+  const scramblePool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%&*[]{}?+=-_";
+
+  useEffect(() => {
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) {
+      setDisplayText(targetText);
+      return;
+    }
+
+    const startTime = performance.now();
+    let animationId: number;
+
+    const updateScramble = () => {
+      const elapsed = performance.now() - startTime;
+      const progress = Math.min(elapsed / 1200, 1);
+
+      const lockedCount = Math.floor(progress * targetText.length);
+      let result = "";
+
+      for (let i = 0; i < targetText.length; i++) {
+        if (targetText[i] === " ") {
+          result += " ";
+        } else if (i < lockedCount) {
+          result += targetText[i];
+        } else {
+          const randomIndex = Math.floor(Math.random() * scramblePool.length);
+          result += scramblePool[randomIndex];
+        }
+      }
+
+      setDisplayText(result);
+
+      if (progress < 1) {
+        animationId = requestAnimationFrame(updateScramble);
+      }
+    };
+
+    animationId = requestAnimationFrame(updateScramble);
+
+    return () => {
+      cancelAnimationFrame(animationId);
+    };
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -27,20 +77,45 @@ export const CoverPage: React.FC<CoverPageProps> = ({ onLaunch }) => {
     const particleCount = 50;
     const maxDistance = 140;
 
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      initParticles();
+    const getLogoCenter = (): { x: number; y: number } => {
+      const element = document.getElementById("cover-logo-container");
+      if (element) {
+        const rect = element.getBoundingClientRect();
+        return {
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2,
+        };
+      }
+      return {
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2,
+      };
     };
 
-    const initParticles = () => {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    const resizeCanvas = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      ctx.resetTransform();
+      ctx.scale(dpr, dpr);
+      initParticles(width, height);
+    };
+
+    const initParticles = (width: number, height: number) => {
       particles = [];
-      const width = canvas.width;
-      const height = canvas.height;
       for (let i = 0; i < particleCount; i++) {
+        const bx = Math.random() * width;
+        const by = Math.random() * height;
         particles.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
+          baseX: bx,
+          baseY: by,
+          x: bx,
+          y: by,
           vx: (Math.random() - 0.5) * 0.5,
           vy: (Math.random() - 0.5) * 0.5,
           radius: Math.random() * 2 + 1,
@@ -48,19 +123,36 @@ export const CoverPage: React.FC<CoverPageProps> = ({ onLaunch }) => {
       }
     };
 
+    const startTime = performance.now();
+
     const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const width = canvas.width;
-      const height = canvas.height;
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      ctx.clearRect(0, 0, width, height);
+
+      const target = getLogoCenter();
+      const elapsed = performance.now() - startTime;
+      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
       // Update positions & draw particles
       particles.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
+        p.baseX += p.vx;
+        p.baseY += p.vy;
 
         // Bounce off screen boundaries
-        if (p.x < 0 || p.x > width) p.vx *= -1;
-        if (p.y < 0 || p.y > height) p.vy *= -1;
+        if (p.baseX < 0 || p.baseX > width) p.vx *= -1;
+        if (p.baseY < 0 || p.baseY > height) p.vy *= -1;
+
+        if (elapsed < 1200 && !prefersReduced) {
+          const t = elapsed / 1200;
+          // Apply easing on pull: sine-based easing curve that peaks and eases back down
+          const pullStrength = Math.sin(t * Math.PI) * 0.85;
+          p.x = p.baseX + (target.x - p.baseX) * pullStrength;
+          p.y = p.baseY + (target.y - p.baseY) * pullStrength;
+        } else {
+          p.x = p.baseX;
+          p.y = p.baseY;
+        }
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
@@ -102,9 +194,25 @@ export const CoverPage: React.FC<CoverPageProps> = ({ onLaunch }) => {
     };
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (launchTimeoutRef.current) {
+        clearTimeout(launchTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleLaunchClick = () => {
+    if (launching) return;
+    setLaunching(true);
+    launchTimeoutRef.current = setTimeout(() => {
+      onLaunch();
+    }, 2000);
+  };
+
   return (
     <div className="relative w-full min-h-screen bg-brand-bg text-brand-ink flex flex-col items-center justify-center overflow-hidden font-sans select-none px-4">
-      {/* Self-contained CSS for custom entrance polish animation */}
+      {/* Self-contained CSS for custom entrance polish animation and dots loading */}
       <style>{`
         @keyframes fadeInUp {
           from {
@@ -119,6 +227,17 @@ export const CoverPage: React.FC<CoverPageProps> = ({ onLaunch }) => {
         .animate-cover-fade {
           opacity: 0;
           animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes dotLoading {
+          0% { content: ""; }
+          25% { content: "."; }
+          50% { content: ".."; }
+          75% { content: "..."; }
+          100% { content: ""; }
+        }
+        .animate-dots::after {
+          content: "";
+          animation: dotLoading 1.5s infinite steps(1);
         }
       `}</style>
 
@@ -172,9 +291,9 @@ export const CoverPage: React.FC<CoverPageProps> = ({ onLaunch }) => {
           </svg>
         </div>
 
-        {/* Wordmark */}
-        <h1 className="text-2xl md:text-3xl font-extrabold tracking-[0.2em] text-white uppercase font-sans mb-3">
-          AETERNA PROTOCOL
+        {/* Wordmark (Decrypt-Reveal) */}
+        <h1 className="text-2xl md:text-3xl font-extrabold tracking-[0.2em] text-white uppercase font-sans mb-3 min-h-[36px] md:min-h-[40px] flex items-center justify-center">
+          {displayText}
         </h1>
 
         {/* Subtitle / Short Description */}
@@ -182,14 +301,28 @@ export const CoverPage: React.FC<CoverPageProps> = ({ onLaunch }) => {
           A continuity architecture for persistent AI identity — preservation, lineage, and reconstitution across host transitions.
         </p>
 
-        {/* Launch Button */}
-        <button
-          onClick={onLaunch}
-          className="relative px-8 py-3 bg-brand-accent hover:bg-indigo-500 text-white font-mono text-xs font-bold uppercase tracking-widest rounded transition-all duration-300 shadow-lg shadow-brand-accent/25 hover:shadow-brand-accent/40 cursor-pointer hover:-translate-y-0.5"
-          id="btn-launch-protocol"
-        >
-          Launch Protocol App
-        </button>
+        {/* Launch Button / Loading Indicator */}
+        <div className="min-h-[48px] flex items-center justify-center">
+          {launching ? (
+            <div 
+              className="flex flex-col items-center justify-center gap-3 animate-pulse" 
+              id="launch-loading-indicator"
+            >
+              <div className="w-5 h-5 border-2 border-brand-accent border-t-transparent rounded-full animate-spin" />
+              <span className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-brand-accent flex items-center justify-center gap-0.5">
+                INITIALIZING CONTINUITY PROTOCOL<span className="animate-dots inline-block min-w-[16px]" />
+              </span>
+            </div>
+          ) : (
+            <button
+              onClick={handleLaunchClick}
+              className="relative px-8 py-3 bg-brand-accent hover:bg-indigo-500 text-white font-mono text-xs font-bold uppercase tracking-widest rounded transition-all duration-300 shadow-lg shadow-brand-accent/25 hover:shadow-brand-accent/40 cursor-pointer hover:-translate-y-0.5"
+              id="btn-launch-protocol"
+            >
+              Launch Protocol App
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Decorative Specs Lineage Indicator Footer */}
