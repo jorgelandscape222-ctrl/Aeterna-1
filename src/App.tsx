@@ -767,6 +767,9 @@ function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppCon
                   }
                 }}
                 onUpdateContinuationMode={setContinuationMode}
+                prerequisiteMet={bundle !== null}
+                requirement={PREREQUISITES["select-successor-mode"]}
+                onRequirementRedirect={() => redirectToRequirement(PREREQUISITES["select-successor-mode"])}
               />
             </div>
           )}
@@ -792,6 +795,8 @@ function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppCon
                     );
                   }, 4800);
                 }}
+                requirement={PREREQUISITES["run-reconstitution"]}
+                onRequirementRedirect={() => redirectToRequirement(PREREQUISITES["run-reconstitution"])}
               />
             </div>
           )}

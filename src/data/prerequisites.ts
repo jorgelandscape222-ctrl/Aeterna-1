@@ -21,6 +21,20 @@ export const PREREQUISITES: Record<string, Requirement> = {
     targetTab: "snapshot",
     targetElementId: "btn-generate-snapshot",
   },
+  "run-reconstitution": {
+    title: "Sealed bundle required",
+    message: "The reconstitution sandbox restores an agent from a signed, escrowed continuity bundle. Generate the bundle first, then run the sandbox here.",
+    ctaLabel: "Go to Bundle stage",
+    targetTab: "bundle",
+    targetElementId: "btn-package-bundle",
+  },
+  "select-successor-mode": {
+    title: "Bundle required",
+    message: "Successor governance applies to an escrowed continuity bundle. Generate the bundle first, then choose how the successor operates.",
+    ctaLabel: "Go to Bundle stage",
+    targetTab: "bundle",
+    targetElementId: "btn-package-bundle",
+  },
   "simulate-commercialization": {
     title: "Bundle required",
     message: "Commercialization licenses a sealed continuity bundle. Generate the bundle first, then simulate licensing here.",

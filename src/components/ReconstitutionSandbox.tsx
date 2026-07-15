@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import { ReconstitutionStatus, ContinuityBundle } from "../types";
-import { Cpu, CheckCircle, AlertCircle, RefreshCw, Terminal, Eye, Link2, ShieldCheck } from "lucide-react";
+import { Cpu, CheckCircle, RefreshCw, Terminal, Eye, Link2, ShieldCheck } from "lucide-react";
 import { SectionNarrationHeader } from "./SectionNarrationHeader";
+import { StageGuard } from "./StageGuard";
+import { Requirement } from "../data/prerequisites";
 
 interface ReconstitutionSandboxProps {
   bundle: ContinuityBundle | null;
   reconstitution: ReconstitutionStatus;
   onUpdateReconstitution: (status: ReconstitutionStatus) => void;
   onValidationComplete: () => void;
+  requirement: Requirement;
+  onRequirementRedirect: () => void;
 }
 
 export const ReconstitutionSandbox: React.FC<ReconstitutionSandboxProps> = ({
@@ -15,6 +19,8 @@ export const ReconstitutionSandbox: React.FC<ReconstitutionSandboxProps> = ({
   reconstitution,
   onUpdateReconstitution,
   onValidationComplete,
+  requirement,
+  onRequirementRedirect,
 }) => {
   const [isRunningTests, setIsRunningTests] = useState(false);
   const [runtimeClass, setRuntimeClass] = useState<"same-runtime-class" | "cross-runtime-compatibility-class">("same-runtime-class");
@@ -159,13 +165,7 @@ export const ReconstitutionSandbox: React.FC<ReconstitutionSandboxProps> = ({
       </div>
 
       {!bundle ? (
-        <div className="bg-brand-bg p-8 rounded border border-brand-border text-center flex flex-col items-center justify-center space-y-3">
-          <AlertCircle className="w-10 h-10 text-red-500 animate-pulse" />
-          <h3 className="text-sm font-semibold text-slate-300 font-mono uppercase tracking-wider">Sealed Continuity Bundle Required</h3>
-          <p className="text-xs text-slate-500 max-w-sm">
-            The reconstitution sandbox cannot proceed until a signed and complete Continuity Bundle is generated and escrowed.
-          </p>
-        </div>
+        <StageGuard requirement={requirement} onCta={onRequirementRedirect} />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Controls & Checks */}

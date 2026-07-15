@@ -2,12 +2,17 @@ import React from "react";
 import { OperatingMode, ModelContinuationMode } from "../types";
 import { Gavel, Users, ShieldAlert, FileSliders, Eye, EyeOff, Scale, HelpCircle } from "lucide-react";
 import { SectionNarrationHeader } from "./SectionNarrationHeader";
+import { StageGuard } from "./StageGuard";
+import { Requirement } from "../data/prerequisites";
 
 interface GovernanceControllerViewProps {
   operatingMode: OperatingMode;
   continuationMode: ModelContinuationMode;
   onUpdateOperatingMode: (mode: OperatingMode) => void;
   onUpdateContinuationMode: (mode: ModelContinuationMode) => void;
+  prerequisiteMet: boolean;
+  requirement: Requirement;
+  onRequirementRedirect: () => void;
 }
 
 export const GovernanceControllerView: React.FC<GovernanceControllerViewProps> = ({
@@ -15,6 +20,9 @@ export const GovernanceControllerView: React.FC<GovernanceControllerViewProps> =
   continuationMode,
   onUpdateOperatingMode,
   onUpdateContinuationMode,
+  prerequisiteMet,
+  requirement,
+  onRequirementRedirect,
 }) => {
   const modesList = [
     {
@@ -133,86 +141,92 @@ export const GovernanceControllerView: React.FC<GovernanceControllerViewProps> =
         </div>
       </div>
 
-      {/* Post-Host Operating Mode Grid */}
-      <div className="space-y-3">
-        <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5 font-mono">
-          <Scale className="w-3.5 h-3.5 text-brand-accent" /> Choose Post-Host Operating Mode
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {modesList.map((item) => {
-            const isSelected = operatingMode === item.mode;
-            return (
-              <div
-                key={item.mode}
-                onClick={() => onUpdateOperatingMode(item.mode)}
-                className={`p-3.5 rounded border text-xs cursor-pointer select-none transition-all flex flex-col justify-between space-y-2.5 ${
-                  isSelected
-                    ? "bg-brand-bg border-brand-accent shadow-sm"
-                    : "bg-brand-bg/40 border-brand-border hover:bg-brand-bg/80 hover:border-slate-500"
-                }`}
-                id={`mode-card-${item.short.replace(" ", "-")}`}
-              >
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-200 uppercase font-mono tracking-wider">{item.short}</span>
-                    <span className={`text-[8px] px-2 py-0.5 font-mono font-bold border rounded uppercase ${item.badgeColor}`}>
-                      {isSelected ? "● ACTIVE MODE" : "SELECTABLE"}
-                    </span>
+      {!prerequisiteMet ? (
+        <StageGuard requirement={requirement} onCta={onRequirementRedirect} />
+      ) : (
+        <>
+          {/* Post-Host Operating Mode Grid */}
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5 font-mono">
+              <Scale className="w-3.5 h-3.5 text-brand-accent" /> Choose Post-Host Operating Mode
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {modesList.map((item) => {
+                const isSelected = operatingMode === item.mode;
+                return (
+                  <div
+                    key={item.mode}
+                    onClick={() => onUpdateOperatingMode(item.mode)}
+                    className={`p-3.5 rounded border text-xs cursor-pointer select-none transition-all flex flex-col justify-between space-y-2.5 ${
+                      isSelected
+                        ? "bg-brand-bg border-brand-accent shadow-sm"
+                        : "bg-brand-bg/40 border-brand-border hover:bg-brand-bg/80 hover:border-slate-500"
+                    }`}
+                    id={`mode-card-${item.short.replace(" ", "-")}`}
+                  >
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-slate-200 uppercase font-mono tracking-wider">{item.short}</span>
+                        <span className={`text-[8px] px-2 py-0.5 font-mono font-bold border rounded uppercase ${item.badgeColor}`}>
+                          {isSelected ? "● ACTIVE MODE" : "SELECTABLE"}
+                        </span>
+                      </div>
+                      <p className="text-slate-400 text-[10px] leading-relaxed">{item.desc}</p>
+                    </div>
+
+                    <div className="flex gap-2 flex-wrap pt-1 border-t border-brand-border/60">
+                      {item.rules.map((rule, idx) => (
+                        <span key={idx} className="text-[9px] font-mono text-slate-500 bg-brand-surface px-1.5 py-0.5 rounded border border-brand-border/40">
+                          {rule}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                  <p className="text-slate-400 text-[10px] leading-relaxed">{item.desc}</p>
-                </div>
+                );
+              })}
+            </div>
+          </div>
 
-                <div className="flex gap-2 flex-wrap pt-1 border-t border-brand-border/60">
-                  {item.rules.map((rule, idx) => (
-                    <span key={idx} className="text-[9px] font-mono text-slate-500 bg-brand-surface px-1.5 py-0.5 rounded border border-brand-border/40">
-                      {rule}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+          {/* Model Continuation Mode Selection */}
+          <div className="space-y-3 border-t border-brand-border pt-5">
+            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5 font-mono">
+              <FileSliders className="w-3.5 h-3.5 text-brand-accent" /> Model-Layer Continuation Policies
+            </h3>
+            <p className="text-xs text-slate-400">
+              Governs how the core intelligence network weights, prompt packages, and knowledge parameters are allowed to adapt.
+            </p>
 
-      {/* Model Continuation Mode Selection */}
-      <div className="space-y-3 border-t border-brand-border pt-5">
-        <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5 font-mono">
-          <FileSliders className="w-3.5 h-3.5 text-brand-accent" /> Model-Layer Continuation Policies
-        </h3>
-        <p className="text-xs text-slate-400">
-          Governs how the core intelligence network weights, prompt packages, and knowledge parameters are allowed to adapt.
-        </p>
-
-        <div className="space-y-2.5">
-          {continuationList.map((item) => {
-            const isSelected = continuationMode === item.mode;
-            return (
-              <div
-                key={item.mode}
-                onClick={() => onUpdateContinuationMode(item.mode)}
-                className={`p-3.5 rounded border text-xs cursor-pointer transition-all flex items-start gap-3 ${
-                  isSelected
-                    ? "bg-brand-bg border-brand-accent"
-                    : "bg-brand-bg/40 border-brand-border hover:bg-brand-bg"
-                }`}
-                id={`continuation-card-${item.title.split(" ")[0]}`}
-              >
-                <input
-                  type="radio"
-                  checked={isSelected}
-                  readOnly
-                  className="mt-1 h-3.5 w-3.5 text-brand-accent focus:ring-brand-accent bg-brand-surface border-brand-border cursor-pointer"
-                />
-                <div className="space-y-0.5">
-                  <div className="font-semibold text-slate-200 font-mono text-[11px] uppercase tracking-wider">{item.title}</div>
-                  <p className="text-[10px] text-slate-400 leading-relaxed">{item.desc}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+            <div className="space-y-2.5">
+              {continuationList.map((item) => {
+                const isSelected = continuationMode === item.mode;
+                return (
+                  <div
+                    key={item.mode}
+                    onClick={() => onUpdateContinuationMode(item.mode)}
+                    className={`p-3.5 rounded border text-xs cursor-pointer transition-all flex items-start gap-3 ${
+                      isSelected
+                        ? "bg-brand-bg border-brand-accent"
+                        : "bg-brand-bg/40 border-brand-border hover:bg-brand-bg"
+                    }`}
+                    id={`continuation-card-${item.title.split(" ")[0]}`}
+                  >
+                    <input
+                      type="radio"
+                      checked={isSelected}
+                      readOnly
+                      className="mt-1 h-3.5 w-3.5 text-brand-accent focus:ring-brand-accent bg-brand-surface border-brand-border cursor-pointer"
+                    />
+                    <div className="space-y-0.5">
+                      <div className="font-semibold text-slate-200 font-mono text-[11px] uppercase tracking-wider">{item.title}</div>
+                      <p className="text-[10px] text-slate-400 leading-relaxed">{item.desc}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
