@@ -20,7 +20,7 @@ import { sha256 } from "./utils/crypto";
 import { SCENARIOS, Scenario, ScenarioStep } from "./data/scenarios";
 
 import { PREREQUISITES, Requirement } from "./data/prerequisites";
-import { flashElement } from "./utils/flash";
+import { flashElement, flashTwice } from "./utils/flash";
 
 // Sub-components
 import { TimelineLog } from "./components/TimelineLog";
@@ -42,7 +42,7 @@ import { NarrationControls } from "./components/NarrationControls";
 import { AeternaAssistant } from "./components/AeternaAssistant";
 
 // Icons
-import { Play, Sparkles, RefreshCw, Layers, ShieldCheck, Cpu, Coins, GitFork, ArrowRight, BookOpen, AlertTriangle, Map, Download, Bot, LucideIcon } from "lucide-react";
+import { Play, Sparkles, RefreshCw, Layers, ShieldCheck, Cpu, Coins, GitFork, ArrowRight, BookOpen, AlertTriangle, Map, Download, Bot, Headphones, LucideIcon } from "lucide-react";
 
 // Sub-system tab definitions, driving both the desktop (numbered, full-label)
 // and mobile (short-label) tab bar renders from a single source of truth.
@@ -83,6 +83,9 @@ function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppCon
   // Assistant open state
   const [assistantOpen, setAssistantOpen] = useState<boolean>(assistantAutoOpen);
 
+  // Tour panel state
+  const [tourPanelOpen, setTourPanelOpen] = useState<boolean>(false);
+
   // Narration state hook
   const { startTour, currentlyNarratedSectionId, onTabChangeExternal } = useNarration();
 
@@ -91,22 +94,20 @@ function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppCon
     setTimeout(() => flashElement(req.targetElementId), 150);
   };
 
-  // Autoplay on first-visit welcome/tour sequence
-  useEffect(() => {
-    const hasOnboarded = localStorage.getItem("aeterna-onboarded");
-    if (!hasOnboarded) {
-      const timer = setTimeout(() => {
-        startTour();
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [startTour]);
-
   // Tab click event proxy (stops the tour if they manually click away to explore)
   const handleTabClick = (tabId: string) => {
     setActiveTab(tabId);
     onTabChangeExternal(tabId);
   };
+
+  // Sequence the flashes when dashboard mode is entered
+  useEffect(() => {
+    if (mode !== "dashboard") return;
+    const t = setTimeout(() => {
+      flashTwice("btn-launch-assistant-header", () => flashTwice("btn-launch-tour-header"));
+    }, 700);
+    return () => clearTimeout(t);
+  }, [mode]);
 
   // Core system states
   const [currentState, setCurrentState] = useState<ContinuityState>(ContinuityState.S0_HOST_LINKED_ACTIVE);
@@ -534,21 +535,22 @@ function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppCon
             )}
 
             <button
+              onClick={() => { setTourPanelOpen(true); startTour(); }}
+              className="flex-1 sm:flex-none justify-center bg-brand-surface border border-brand-accent/40 hover:border-brand-accent text-slate-200 transition-all duration-200 px-3 py-1.5 text-xs font-semibold rounded flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+              id="btn-launch-tour-header"
+              title="Launch Guided Audio Tour"
+            >
+              <Headphones className="w-3.5 h-3.5 text-brand-accent shrink-0" />
+              <span className="hidden xs:inline">Audio Tour</span>
+            </button>
+
+            <button
               onClick={() => setIsFlowOverlayOpen(true)}
               className="flex-1 sm:flex-none justify-center bg-brand-accent hover:bg-indigo-500 text-white transition-all duration-200 px-3 sm:px-3.5 py-1.5 text-xs font-bold rounded flex items-center gap-1.5 cursor-pointer shadow-sm shadow-brand-accent/25 whitespace-nowrap"
               id="btn-open-protocol-map"
               title="Protocol Map"
             >
               <Map className="w-3.5 h-3.5 fill-white/10 shrink-0" /> <span className="hidden xs:inline">Protocol Map</span>
-            </button>
-
-            <button
-              onClick={startTour}
-              className="flex-1 sm:flex-none justify-center bg-brand-surface border border-brand-border hover:border-brand-accent/50 text-slate-200 transition-all duration-200 px-3 py-1.5 text-xs font-semibold rounded flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
-              id="btn-take-tour-header"
-              title="Take Audio Tour"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-brand-accent shrink-0 animate-pulse" /> <span>Take Tour</span>
             </button>
 
             <a
@@ -846,7 +848,7 @@ function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppCon
       />
 
       {/* Floating Audio Narration Panel */}
-      <NarrationControls />
+      {tourPanelOpen && <NarrationControls onClose={() => setTourPanelOpen(false)} />}
 
       {/* Floating Interactive Chat Assistant */}
       {mode === 'dashboard' && (

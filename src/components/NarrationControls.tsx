@@ -13,10 +13,15 @@ import {
   SkipBack, 
   Sparkles,
   Volume1,
-  MessageSquare
+  MessageSquare,
+  X
 } from "lucide-react";
 
-export const NarrationControls: React.FC = () => {
+interface NarrationControlsProps {
+  onClose?: () => void;
+}
+
+export const NarrationControls: React.FC<NarrationControlsProps> = ({ onClose }) => {
   const {
     playbackState,
     currentlyNarratedSectionId,
@@ -119,6 +124,21 @@ export const NarrationControls: React.FC = () => {
             </button>
 
             {isExpanded ? <ChevronDown className="w-4 h-4 text-brand-ink-dim" /> : <ChevronUp className="w-4 h-4 text-brand-ink-dim" />}
+
+            {onClose && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  skipTour();
+                  onClose();
+                }}
+                className="p-1.5 rounded hover:bg-brand-surface/80 text-brand-ink-dim hover:text-rose-400 transition cursor-pointer"
+                title="Dismiss Panel"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
 

@@ -101,3 +101,18 @@ body {
   position: relative;
   z-index: 10;
 }
+
+@keyframes attnFlash {
+  0%,100% { box-shadow: 0 0 0 0 rgba(129,140,248,0); }
+  20% { box-shadow: 0 0 0 6px rgba(129,140,248,0.9); }
+  40% { box-shadow: 0 0 0 0 rgba(129,140,248,0); }
+  60% { box-shadow: 0 0 0 6px rgba(129,140,248,0.9); }
+  80% { box-shadow: 0 0 0 0 rgba(129,140,248,0); }
+}
+
+.attn-flash {
+  animation: attnFlash 1.5s ease-in-out;
+  border-radius: 0.375rem;
+  position: relative;
+  z-index: 10;
+}
