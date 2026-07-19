@@ -65,6 +65,22 @@ const TAB_DEFINITIONS: TabDefinition[] = [
   { id: "commercialization", number: 7, fullLabel: "COMMERCIALIZATION", shortLabel: "Commercial", Icon: Coins },
 ];
 
+const INITIAL_RECONSTITUTION: ReconstitutionStatus = {
+  sandboxReady: false,
+  validationChecks: {
+    integrityDigestVerified: false,
+    runtimeCompatibilityCheck: false,
+    securityPolicySandboxPass: false,
+    trialExecutionSuccessful: false,
+  },
+  credentialsReissued: {
+    substituteApiKeyActive: false,
+    originalCredentialsRevoked: false,
+  },
+  runtimeClass: "same-runtime-class",
+  sandboxLogs: [],
+};
+
 interface AppContentProps {
   activeTab: string;
   setActiveTab: (tabId: string) => void;
@@ -153,21 +169,7 @@ function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppCon
     isTriggeredFallback: false,
   });
 
-  const [reconstitution, setReconstitution] = useState<ReconstitutionStatus>({
-    sandboxReady: false,
-    validationChecks: {
-      integrityDigestVerified: false,
-      runtimeCompatibilityCheck: false,
-      securityPolicySandboxPass: false,
-      trialExecutionSuccessful: false,
-    },
-    credentialsReissued: {
-      substituteApiKeyActive: false,
-      originalCredentialsRevoked: false,
-    },
-    runtimeClass: "same-runtime-class",
-    sandboxLogs: [],
-  });
+  const [reconstitution, setReconstitution] = useState<ReconstitutionStatus>(INITIAL_RECONSTITUTION);
 
   const [commercializationLogs, setCommercializationLogs] = useState<CommercializationLog[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
@@ -203,21 +205,7 @@ function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppCon
     setBundle(null);
     setOperatingMode(OperatingMode.MEMORIAL);
     setContinuationMode(ModelContinuationMode.PRESERVATION_LOCKED);
-    setReconstitution({
-      sandboxReady: false,
-      validationChecks: {
-        integrityDigestVerified: false,
-        runtimeCompatibilityCheck: false,
-        securityPolicySandboxPass: false,
-        trialExecutionSuccessful: false,
-      },
-      credentialsReissued: {
-        substituteApiKeyActive: false,
-        originalCredentialsRevoked: false,
-      },
-      runtimeClass: "same-runtime-class",
-      sandboxLogs: [],
-    });
+    setReconstitution(INITIAL_RECONSTITUTION);
     setLineage({
       canonicalTransferState: {
         baseModelReference: "gemini-2.5-pro",
@@ -710,7 +698,15 @@ function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppCon
                 snapshot={snapshot}
                 onGenerateSnapshot={(snap) => {
                   setSnapshot(snap);
-                  if (currentState === ContinuityState.S0_HOST_LINKED_ACTIVE || currentState === ContinuityState.S2_EVIDENCE_PENDING || currentState === ContinuityState.S3_PRESERVATION_SNAPSHOT_CREATED) {
+                  if (bundle) {
+                    setBundle(null);
+                    setReconstitution(INITIAL_RECONSTITUTION);
+                    triggerStateTransition(
+                      ContinuityState.S3_PRESERVATION_SNAPSHOT_CREATED,
+                      "Preservation Snapshot regenerated. Downstream Continuity Bundle and Reconstitution state reset.",
+                      "Preservation Snapshot Module"
+                    );
+                  } else if (currentState === ContinuityState.S0_HOST_LINKED_ACTIVE || currentState === ContinuityState.S2_EVIDENCE_PENDING || currentState === ContinuityState.S3_PRESERVATION_SNAPSHOT_CREATED) {
                     triggerStateTransition(
                       ContinuityState.S3_PRESERVATION_SNAPSHOT_CREATED,
                       "Preservation Snapshot generated matching core schemas.",
@@ -732,6 +728,7 @@ function AppContent({ activeTab, setActiveTab, mode, assistantAutoOpen }: AppCon
                 bundle={bundle}
                 onGenerateBundle={(bd) => {
                   setBundle(bd);
+                  setReconstitution(INITIAL_RECONSTITUTION);
                   triggerStateTransition(
                     ContinuityState.S4_CONTINUITY_BUNDLE_GENERATED,
                     "Continuity Bundle packaged, cryptographically signed, and finalized.",

@@ -19,16 +19,26 @@ export const GuidedPopover: React.FC<GuidedPopoverProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [positionAbove, setPositionAbove] = useState(false);
+  const [popover, setPopover] = useState({ left: 0, arrowLeft: 130, width: 260 });
 
   useEffect(() => {
     if (!open) return;
 
-    if (containerRef.current) {
+    const measure = () => {
+      if (!containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const spaceBelow = viewportHeight - rect.bottom;
-      setPositionAbove(spaceBelow < 240);
-    }
+      const PAD = 8;
+      const vw = window.innerWidth;
+      const width = Math.min(260, vw - PAD * 2);
+      setPositionAbove(window.innerHeight - rect.bottom < 240);
+      const center = rect.left + rect.width / 2;
+      let desiredLeft = center - width / 2;
+      desiredLeft = Math.max(PAD, Math.min(desiredLeft, vw - width - PAD));
+      setPopover({ left: desiredLeft - rect.left, arrowLeft: center - desiredLeft, width });
+    };
+
+    measure();
+    window.addEventListener("resize", measure);
 
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -49,6 +59,7 @@ export const GuidedPopover: React.FC<GuidedPopoverProps> = ({
     document.addEventListener("keydown", handleKeyDown);
 
     return () => {
+      window.removeEventListener("resize", measure);
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleKeyDown);
     };
@@ -65,16 +76,18 @@ export const GuidedPopover: React.FC<GuidedPopoverProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: positionAbove ? -10 : 10 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className={`absolute z-50 w-[260px] bg-brand-surface border border-brand-border rounded p-4 shadow-xl text-left left-1/2 -translate-x-1/2 ${
+            className={`absolute z-50 bg-brand-surface border border-brand-border rounded p-4 shadow-xl text-left ${
               positionAbove ? "bottom-full mb-3" : "top-full mt-3"
             }`}
+            style={{ left: popover.left, width: popover.width }}
             id="guided-popover-panel"
           >
             {/* Arrow */}
             <div
-              className={`absolute left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-brand-surface border-t border-l border-brand-border rotate-45 ${
+              className={`absolute -translate-x-1/2 w-2.5 h-2.5 bg-brand-surface border-t border-l border-brand-border rotate-45 ${
                 positionAbove ? "top-full -mt-1 border-t-0 border-l-0 border-b border-r" : "bottom-full -mb-1"
               }`}
+              style={{ left: popover.arrowLeft }}
             />
 
             <div className="relative z-10 space-y-2.5">
