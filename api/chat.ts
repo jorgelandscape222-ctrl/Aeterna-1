@@ -1,11 +1,4 @@
-import express from "express";
-import path from "path";
-import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
-import dotenv from "dotenv";
-
-// Load environment variables
-dotenv.config();
 
 const KNOWLEDGE_BASE = `**What the protocol is.** Aeterna is a reference design for continuity infrastructure: it preserves a trained AI agent as a governed, portable, restorable asset so the agent can survive events that would otherwise kill it — the owner's death, incapacity, disappearance, a lapsed subscription, a provider lockout, or a voluntary transfer — while keeping the agent recognizable as the same entity and under proper control.
 
@@ -70,91 +63,67 @@ Here is the official KNOWLEDGE_BASE for Aeterna:
 ${KNOWLEDGE_BASE}
 `;
 
-async function startServer() {
-  const app = express();
-  const PORT = 3000;
-
-  // Middleware
-  app.use(express.json());
-
-  // API Chat route
-  app.post(["/api/chat", "/api/gemini"], async (req, res) => {
-    try {
-      const { messages } = req.body;
-      if (!messages || !Array.isArray(messages)) {
-        res.status(400).json({ error: "Invalid messages array in request body." });
-        return;
-      }
-
-      const apiKey = process.env.GEMINI_API_KEY;
-      if (!apiKey) {
-        res.status(500).json({ error: "GEMINI_API_KEY environment variable is not configured." });
-        return;
-      }
-
-      const ai = new GoogleGenAI({
-        apiKey,
-        httpOptions: {
-          headers: {
-            'User-Agent': 'aistudio-build',
-          }
-        }
-      });
-
-      // Cap the conversation history sent to the model to the most recent ~12 messages
-      const maxHistoryCount = 12;
-      const recentMessages = messages.length > maxHistoryCount 
-        ? messages.slice(-maxHistoryCount) 
-        : messages;
-
-      // Map incoming messages to Gemini Content array
-      const contents = recentMessages.map((m: any) => ({
-        role: m.role === "user" ? "user" : "model",
-        parts: [{ text: m.content }]
-      }));
-
-      const response = await ai.models.generateContent({
-        model: "gemini-3.5-flash",
-        contents,
-        config: {
-          systemInstruction: SYSTEM_INSTRUCTION,
-          temperature: 0.7,
-        }
-      });
-
-      const replyText = response.text || "No response received from the model.";
-      res.json({ text: replyText });
-    } catch (error: any) {
-      console.error("Gemini API request failed:", error);
-      
-      // Check for 429 Rate Limit
-      if (error.status === 429 || (error.message && error.message.includes("429"))) {
-        res.status(429).json({ error: "Too many requests. Please try again." });
-        return;
-      }
-
-      res.status(500).json({ error: "The assistant is temporarily unavailable. Please try again." });
-    }
-  });
-
-  // Vite middleware for development
-  if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
+export default async function handler(req: any, res: any) {
+  // Vercel serverless function entrypoint
+  if (req.method !== "POST") {
+    res.status(405).json({ error: "Method not allowed. Use POST." });
+    return;
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-}
+  try {
+    const { messages } = req.body;
+    if (!messages || !Array.isArray(messages)) {
+      res.status(400).json({ error: "Invalid messages array in request body." });
+      return;
+    }
 
-startServer();
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      res.status(500).json({ error: "GEMINI_API_KEY environment variable is not configured." });
+      return;
+    }
+
+    const ai = new GoogleGenAI({
+      apiKey,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build',
+        }
+      }
+    });
+
+    // Cap the conversation history sent to the model to the most recent ~12 messages
+    const maxHistoryCount = 12;
+    const recentMessages = messages.length > maxHistoryCount 
+      ? messages.slice(-maxHistoryCount) 
+      : messages;
+
+    // Map incoming messages to Gemini Content array
+    const contents = recentMessages.map((m: any) => ({
+      role: m.role === "user" ? "user" : "model",
+      parts: [{ text: m.content }]
+    }));
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3.5-flash",
+      contents,
+      config: {
+        systemInstruction: SYSTEM_INSTRUCTION,
+        temperature: 0.7,
+      }
+    });
+
+    const replyText = response.text || "No response received from the model.";
+    res.status(200).json({ text: replyText });
+  } catch (error: any) {
+    console.error("Gemini API request failed:", error);
+    
+    // Check for 429 Rate Limit
+    if (error.status === 429 || (error.message && error.message.includes("429"))) {
+      res.status(429).json({ error: "Too many requests. Please try again." });
+      return;
+    }
+
+    res.status(500).json({ error: "The assistant is temporarily unavailable. Please try again." });
+  }
+}
